@@ -1,0 +1,64 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <style>
+        /* 标签选择器 */
+        body {
+            background-color: linen;
+        }
+
+        /* 标签选择器 */
+        h1 {
+            color: maroon;
+            margin-left: 40px;
+        }
+
+        /* 分组选择器*/
+        h2, h3, span {
+            color: purple;
+            font-weight: bold;
+        }
+
+        /* ID选择器*/
+        #specialPara {
+            color: blue;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        /* 类选择器1*/
+        .highlight {
+            background-color: yellow;
+            padding: 5px;
+        }
+
+        /* 类选择器2*/
+        .orange-text {
+            color: orange;
+        }
+
+        /* 元素+类选择器 */
+        span.note {
+            color: orange;
+            font-style: italic;
+            border-left: 3px solid orange;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+<body style="background-color: lavender">
+    <h1>This is a heading</h1>
+    <h2>这是h2</h2>
+    <h3>这是h3</h3>
+
+    <p class="highlight">This is a paragraph</p>
+    <p id="specialPara">请尝试通过删除样式来查看级联样式表的工作方式</p>
+    <p class="highlight orange-text">这个段落同时拥有高亮背景和橙色文字</p>
+
+    <p>这里有一个<span class="note">重要提示</span>，需要你注意。</p>
+    <script>
+        var x = "Hello World";
+        console.log(x);
+    </script>
+</body>
+</html>
