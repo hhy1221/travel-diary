@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>凡星支教队</title>
+</head>
+<body>
+<h1>电子科技大学计算机学院凡星支教队</h1>
+<p id="demo">凡星支教队，点亮乡村教育之光</p>
+<button onclick="changeContent()">改变内容</button>
+<button onclick="changeStyle()">改变样式</button>
+<button onclick="hidePara()">隐藏</button>
+<button onclick="showPara()">显示</button>
+<button onclick="showAlert()">弹窗问候</button>
+
+<script>
+"use strict";
+var teamName = "凡星支教队";
+var year = 2026;
+var isActive = true;
+var members = ["黄寒阳", "寒阳黄", "阳黄寒"];
+var teamInfo = {school:"电子科大", college:"计算机学院", slogan:"凡星点点，汇聚成光"};
+
+console.log(teamName, year, isActive);
+console.log(members);
+console.log(teamInfo);
+
+function greet(name) {
+    return "Hello " + name + "，来自" + teamInfo.college;
+}
+
+var getSlogan = function() {
+    return teamInfo.slogan;
+};
+
+(function() {
+    var x = "自调用: 支教队加油！";
+    console.log(x);
+})();
+
+var doubleYear = (y) => y * 2;
+console.log("双倍年份:", doubleYear(year));
+
+
+var car = "校车";
+function testScope() {
+    var car = "自行车";
+    console.log("函数内car:", car);
+}
+testScope();
+console.log("全局car:", car);
+
+{
+    var varX = "var在块内";
+    let letX = "let在块内";
+    console.log(varX);
+    console.log(letX);
+}
+console.log("块外varX:", varX);
+
+console.log("提升前:", liftedVar);
+var liftedVar = "声明提升后赋值";
+console.log("提升后:", liftedVar);
+
+
+function strictFunc() {
+    "use strict";
+    var declaredVar = "已声明";
+    console.log(declaredVar);
+}
+strictFunc();
+
+function changeContent() {
+    document.getElementById("demo").innerHTML = "凡星支教队正在服务凉山小学";
+}
+function changeStyle() {
+    document.getElementById("demo").style.fontSize = "25px";
+    document.getElementById("demo").style.color = "red";
+}
+function hidePara() {
+    document.getElementById("demo").style.display = "none";
+}
+function showPara() {
+    document.getElementById("demo").style.display = "block";
+}
+function showAlert() {
+    alert(greet("支教志愿者") + " " + getSlogan());
+}
+</script>
+</body>
+</html>
