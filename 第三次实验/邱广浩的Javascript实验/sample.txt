@@ -1,0 +1,2 @@
+This is a sample text file.
+Node.js 服务器测试文件
