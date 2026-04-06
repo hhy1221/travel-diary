@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>JS 演示</title>
+  <script>
+    var x, y, z;
+    function add(a, b) {
+      return a + b;
+    }
+    x = add(1, 1);
+
+    // 自调用函数
+    (function () {
+      y = "hello";
+    })();
+
+    // 箭头函数
+    let program = (val) => {
+      return "hello";
+    };
+    z = program('world');
+  </script>
+</head>
+
+<body>
+  <h2>JavaScript 操作演示</h2>
+  <p id="demo">JavaScript 能改内容、样式，还能隐藏元素。</p>
+  <img id="myImg" src="https://www.w3schools.com/js/pic_bulboff.gif">
+  <br>
+
+  <button onclick="document.getElementById('demo').innerHTML='内容已修改！'">改内容</button>
+  <button onclick="document.getElementById('myImg').src='https://www.w3schools.com/js/pic_bulbon.gif'">开灯</button>
+  <button onclick="document.getElementById('myImg').src='https://www.w3schools.com/js/pic_bulboff.gif'">关灯</button>
+  <button onclick="document.getElementById('demo').style.color='red'">变红</button>
+  <button onclick="document.getElementById('demo').style.display='none'">隐藏</button>
+  <button onclick="document.getElementById('demo').style.display='block'">显示</button>
+</body>
+</html>
