@@ -13,6 +13,11 @@
 <button onclick="showPara()">显示</button>
 <button onclick="showAlert()">弹窗问候</button>
 
+<button onclick="showYears()">显示成立年数</button>
+<button onclick="showMembers()">显示成员列表</button>
+<button onclick="addVolunteer()">添加志愿者</button>
+<button onclick="readExternalFile()">读取外部消息</button>
+
 <script>
 "use strict";
 var teamName = "凡星支教队";
@@ -59,7 +64,7 @@ console.log("全局car:", car);
 console.log("块外varX:", varX);
 
 console.log("提升前:", liftedVar);
-var liftedVar = "声明提升后赋值";
+var liftedVar = "凡星加油";
 console.log("提升后:", liftedVar);
 
 
@@ -85,6 +90,30 @@ function showPara() {
 }
 function showAlert() {
     alert(greet("支教志愿者") + " " + getSlogan());
+}
+
+var foundationYear = 2020;
+
+function showYears() {
+    var activeYears = year - foundationYear;
+    alert("凡星支教队成立于" + foundationYear + "年，至今已成立" + activeYears + "年。");
+}
+
+function showMembers() {
+    alert("支教队成员：\n" + members.join("\n"));
+}
+
+function addVolunteer() {
+    var newMember = "新志愿者";
+    members.push(newMember);
+    alert("已添加：" + newMember + "\n当前成员：\n" + members.join("\n"));
+}
+
+function readExternalFile() {
+    fetch('team_message.txt')
+        .then(response => response.text())
+        .then(text => alert("外部文件内容：\n" + text))
+        .catch(error => alert("读取失败，请确认 team_message.txt 文件存在"));
 }
 </script>
 </body>
