@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>黄寒阳的留言本</title>
+    <link rel="stylesheet" href="/css/mystyle.css">
+</head>
+<body>
+    <h1>写点东西吧</h1>
+
+    <form action="/submit" method="POST">
+        <div>
+            <label for="title">文章标题：</label>
+            <input required value="无标题笔记" type="text" name="title" id="title">
+        </div>
+
+        <div>
+            <label for="description">正文内容：</label>
+            <textarea name="description" id="description" rows="8" cols="60">今天发生了什么有趣的事？</textarea>
+        </div>
+
+        <div>
+            <a href="/hello">回到首页</a>
+            <button type="submit">发表笔记</button>
+        </div>
+    </form>
+</body>
+</html>
