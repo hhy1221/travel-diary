@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>输入表单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;  
+            padding: 20px;
+        }
+
+        /* 表单卡片样式 */
+        .form-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #212529;
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .btn-save:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-cancel {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .btn-cancel:hover {
+            color: #5a6268;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h1 class="form-title">我的第一个表单</h1>
+        <form action="/" method="POST">
+            <div class="form-group">
+                <label for="title">NAME</label>
+                <input required value="this is the title" type="text" name="title" id="title">
+            </div>
+            <div class="form-group">
+                <label for="description">BIRTHDAY</label>
+                <textarea name="description" id="description">this is the description</textarea>
+            </div>
+            <a href="" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-save">Save</button>
+        </form>
+    </div>
+</body>
+</html>
