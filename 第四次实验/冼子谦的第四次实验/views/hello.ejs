@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <!-- 引用外部CSS（对应public/css/style.css，路径完全正确） -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 仅保留图片专属样式，其余样式移到外部CSS */
+        .logo-img { 
+            display: block; 
+            width: 120px; 
+            height: auto; 
+            margin: 0 auto 20px; 
+        }
+    </style>
+</head>
+<body>
+    <!-- 引用图片（对应public/image/baidu.png） -->
+    <img src="/image/baidu.png" alt="网站logo" class="logo-img">
+    
+    <h1><%= dynamic_text %></h1>
+    <div class="form-box">
+        <form method="POST" action="/">
+            <input type="text" name="title" placeholder="请输入标题" required>
+            <textarea name="description" rows="5" placeholder="请输入内容" required></textarea>
+            <br>
+            <button type="submit">提交文章</button>
+        </form>
+    </div>
+</body>
+</html>
