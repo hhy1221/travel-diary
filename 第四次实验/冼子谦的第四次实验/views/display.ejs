@@ -1,0 +1,51 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>文章详情</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .article-box {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        .logo-img {
+            display: block;
+            width: 120px;
+            height: auto;
+            margin: 0 auto 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .content {
+            line-height: 1.8;
+            color: #34495e;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="article-box">
+        <img src="/image/baidu.png" alt="网站logo" class="logo-img">
+
+        <h1>文章标题</h1>
+        <p><%= article.title %></p>
+
+        <h1>文章内容</h1>
+        <p class="content"><%= article.description %></p>
+
+        <a href="/" class="back-link">← 返回首页</a>
+    </div>
+</body>
+</html>
