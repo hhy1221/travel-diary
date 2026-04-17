@@ -286,13 +286,13 @@
 
 **题目要求**
 
-1. 学习 WSL 的安装与基本使用，能够在 Windows 系统中运行 Linux 环境。
-2. 学习在 Linux 环境中使用 Docker 安装 MongoDB 数据库，并掌握容器的启动、停止、查看等基本操作。
-3. 学习使用 Mongoose 连接 MongoDB 数据库，实现数据的增删改查（CRUD）操作。
+1. 学习WSL的安装与基本使用，能够在Windows系统中运行Linux环境。
+2. 学习在Linux环境中使用Docker安装MongoDB数据库，并掌握容器的启动、停止、查看等基本操作。
+3. 学习使用Mongoose连接MongoDB数据库，实现数据的增删改查（CRUD）操作。
 
 **完成情况**
 
-小组成员均已完成 WSL 的安装和基本配置，成功在 Linux 子系统中通过 Docker 运行 MongoDB 容器，并编写了 Mongoose 的增删改查示例代码，实现了对数据库记录的创建、查询、更新和删除功能。
+小组成员均已完成WSL的安装和基本配置，成功在Linux子系统中通过Docker运行MongoDB容器，并编写了Mongoose的增删改查示例代码，实现了对数据库记录的创建、查询、更新和删除功能。
 
 **提交编号**
 
@@ -308,18 +308,18 @@
 
 | 任务模块 | 任务描述 |
 | :--- | :--- |
-| WSL 环境搭建 | 在 Windows 上安装并配置 WSL 2，安装 Debian 发行版，熟悉 wsl 基本命令 |
-| MongoDB 数据库部署 | 在 WSL 中安装 Docker，拉取 MongoDB 镜像并创建容器，设置用户名密码，确保数据库正常运行 |
-| Mongoose 增删改查 | 编写 Node.js 脚本，使用 Mongoose 连接 MongoDB，实现数据的增加、删除、修改和查询功能 |
+| WSL环境搭建 | 在Windows上安装并配置WSL，安装Debian，熟悉wsl基本命令 |
+| MongoDB数据库部署 | 在WSL中安装Docker，拉取MongoDB镜像并创建容器，设置用户名密码，确保数据库正常运行 |
+| Mongoose增删改查 | 编写Node.js脚本，使用Mongoose连接MongoDB，实现数据的增加、删除、修改和查询功能 |
 | 合并组员提交，完成实验报告 | 把大家的代码和报告合到一起，整理成最终的实验报告 |
 
 #### ✅ 提交记录
 
 | 任务模块 | 提交编号 | 完成情况 |
 | :--- | :--- | :--- |
-| WSL 环境搭建 | 【待填写】 | 完成 WSL 2 和 Debian 的安装，熟悉了进入、退出、查看系统状态等命令 |
-| MongoDB 数据库部署 | 【待填写】 | 通过 Docker 成功运行 MongoDB 容器，能使用 mongosh 登录并查看用户信息 |
-| Mongoose 增删改查 | 【待填写】 | 编写并测试了 create.js、read.js、update.js、delete.js 四个脚本，实现基本 CRUD 操作 |
+| WSL环境搭建 | 7570242 | 完成WSL和Debian的安装，熟悉了进入、退出、查看系统状态等命令 |
+| MongoDB数据库部署 | 7570242 | 通过Docker成功运行MongoDB容器，能使用mongosh登录并查看用户信息 |
+| Mongoose增删改查 | 7570242 | 编写并测试了create.js、read.js、update.js、delete.js 四个脚本，实现基本CRUD操作 |
 | 合并组员提交，完成实验报告 | 【待填写】 | 合并了大家的实验结果和报告，整理成最终版 |
 
 #### 📸 运行结果截图
