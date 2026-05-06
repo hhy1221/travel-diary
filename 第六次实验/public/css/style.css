@@ -1,191 +1,239 @@
-/* ========== 全局重置与变量 ========== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --primary-color: #2c3e50;    /* 深蓝色，可用于导航、按钮 */
-  --accent-color: #e67e22;     /* 橙色，强调色 */
-  --bg-color: #f5f6fa;
-  --card-bg: #ffffff;
-  --text-color: #333;
-  --light-text: #7f8c8d;
-  --border-radius: 8px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --primary: #0f3460;
+  --accent: #e94560;
+  --gold: #f5a623;
+  --bg: #f0f2f5;
+  --card-bg: rgba(255,255,255,0.92);
+  --text: #2d3436;
+  --light: #636e72;
+  --shadow: 0 8px 30px rgba(0,0,0,0.08);
+  --radius: 14px;
 }
 
 body {
-  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  line-height: 1.6;
+  font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
+  background: url('/images/hero.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text);
+  line-height: 1.7;
+  position: relative;
+  min-height: 100vh;
 }
 
-a {
-  color: var(--primary-color);
-  text-decoration: none;
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.35);  /* 背景遮罩，可调整透明度 */
+  z-index: -1;
 }
 
-a:hover {
-  color: var(--accent-color);
-}
+a { text-decoration: none; color: var(--primary); transition: 0.3s; }
+a:hover { color: var(--accent); }
 
-/* ========== 导航栏 ========== */
+/* ===== 导航栏 ===== */
 .navbar {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 0 20px;
+  background: rgba(15,52,96,0.88);
+  backdrop-filter: blur(10px);
+  padding: 0 40px;
   position: sticky;
   top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
-
 .nav-container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 64px;
+  height: 68px;
 }
-
 .nav-logo {
-  color: white !important;
-  font-size: 1.5rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
+  color: #fff !important;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
 }
+.nav-logo span { color: var(--accent); }
+.nav-menu { display: flex; list-style: none; gap: 28px; align-items: center; }
+.nav-menu a { color: rgba(255,255,255,0.85); font-size: 0.95rem; transition: .3s; }
+.nav-menu a:hover { color: var(--accent); }
+.nav-user { color: var(--gold); font-weight: 600; }
 
-.nav-logo:hover {
-  color: var(--accent-color) !important;
+/* ===== 搜索条 ===== */
+.search-bar {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 15px 40px 0;  /* 去掉底部内边距，避免过空 */
 }
-
-.nav-menu {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.search-bar form { display: flex; gap: 10px; }
+.search-bar input {
+  flex: 1; padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 30px;
+  font-size: 1rem; outline: none; background: rgba(255,255,255,0.85); transition: .3s;
 }
-
-.nav-menu a {
-  color: white;
-  font-size: 0.95rem;
-  transition: color 0.3s;
+.search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(233,69,96,0.1); }
+.search-bar button {
+  padding: 14px 30px; background: var(--accent); color: #fff; border: none;
+  border-radius: 30px; font-size: 1rem; cursor: pointer; transition: .3s;
 }
+.search-bar button:hover { background: #c0392b; }
 
-.nav-menu a:hover {
-  color: var(--accent-color);
-}
-
-.nav-user {
-  color: #bdc3c7;
-  margin-left: 10px;
-  font-size: 0.9rem;
-}
-
-/* ========== 主内容区域 ========== */
+/* ===== 主内容区 ===== */
 .main-content {
-  max-width: 1200px;
-  margin: 30px auto;
-  padding: 0 20px;
-  min-height: 70vh;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px 40px 60px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ========== 页脚 ========== */
-.site-footer {
-  background-color: var(--primary-color);
-  color: #bdc3c7;
-  text-align: center;
-  padding: 25px 0;
-  margin-top: 50px;
-}
-
-/* ========== 卡片（后续游记列表会用到） ========== */
+/* ===== 通用卡片 ===== */
 .card {
   background: var(--card-bg);
-  border-radius: var(--border-radius);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 20px;
-  margin-bottom: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 30px;
+  margin-bottom: 25px;
+  transition: 0.3s;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(0,0,0,0.12); }
+
+/* ===== 横幅区域 ===== */
+.hero {
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 25px 0 40px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+}
+.hero-content { position: relative; z-index: 1; color: #fff; }
+.hero-content h1 {
+  font-size: 3rem; margin-bottom: 10px;
+  text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+}
+.hero-content p {
+  font-size: 1.3rem; margin-bottom: 25px; opacity: 0.95;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
 }
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* ========== 按钮基础样式 ========== */
+/* ===== 按钮 ===== */
 .btn {
-  display: inline-block;
-  padding: 10px 20px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: background-color 0.3s, transform 0.1s;
+  display: inline-block; padding: 12px 28px; border-radius: 30px; border: none;
+  cursor: pointer; font-size: 1rem; font-weight: 600; transition: .3s;
 }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #c0392b; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(233,69,96,0.3); }
+.btn-outline { background: transparent; color: #fff; border: 2px solid #fff; }
+.btn-outline:hover { background: #fff; color: var(--primary); }
+.btn-sm { padding: 6px 16px; font-size: 0.85rem; }
+.btn-secondary { background: var(--primary); color: #fff; }
+.btn-secondary:hover { background: #1a252f; }
 
-.btn-primary {
-  background-color: var(--accent-color);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #d35400;
-}
-
-.btn-secondary {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #1a252f;
-}
-
-/* ========== 表单基础样式 ========== */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
+/* ===== 分区标题 ===== */
+.section-title {
+  font-size: 1.6rem;
+  margin: 40px 0 20px;
+  padding: 12px 20px 12px 24px;
+  color: var(--primary);
+  font-weight: 700;
+  border-left: 4px solid var(--accent);
+  background: linear-gradient(to right, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.1) 100%);
+  border-radius: 0 40px 40px 0;  /* 右侧圆角，让渐变结束得更柔和 */
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: var(--text-color);
+  max-width: 100%;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: inherit;
+/* ===== 目的地卡片 ===== */
+.dest-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px;
+}
+.dest-card {
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  transition: .3s; background: var(--card-bg); cursor: pointer;
+}
+.dest-card:hover { transform: translateY(-6px); box-shadow: 0 14px 35px rgba(0,0,0,0.15); }
+.dest-card img { width: 100%; height: 160px; object-fit: cover; }
+.dest-card .info { padding: 15px; }
+.dest-card .info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+
+/* ===== 游记卡片网格 ===== */
+.travel-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;
+}
+.travel-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: .3s;
+}
+.travel-card:hover { transform: translateY(-4px); box-shadow: 0 14px 35px rgba(0,0,0,0.12); }
+.travel-card img { width: 100%; height: 200px; object-fit: cover; }
+.travel-card .card-body { padding: 18px; }
+.travel-card .card-body h3 { font-size: 1.15rem; margin-bottom: 8px; }
+.travel-card .card-body h3 a { color: var(--primary); }
+.travel-card .card-body h3 a:hover { color: var(--accent); }
+.tag {
+  display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.78rem;
+  background: #ffe0e6; color: var(--accent); margin-bottom: 8px;
 }
 
-.form-group textarea {
-  resize: vertical;
+/* ===== 表单 ===== */
+.form-group { margin-bottom: 22px; }
+.form-group label {
+  display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary);
+}
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px;
+  font-size: 1rem; font-family: inherit; background: rgba(255,255,255,0.9); transition: .3s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(233,69,96,0.1); outline: none;
+}
+.form-group textarea { resize: vertical; min-height: 120px; }
+.form-group select { cursor: pointer; }
+
+/* ===== 评论区域 ===== */
+.comment-card {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(5px);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
-/* ========== 响应式设计基础 ========== */
+/* ===== 页脚 ===== */
+.site-footer {
+  background: var(--primary);
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  padding: 30px;
+  margin-top: 60px;
+}
+
+/* ===== 响应式 ===== */
 @media (max-width: 768px) {
-  .nav-container {
-    flex-direction: column;
-    height: auto;
-    padding: 15px 0;
-  }
-  .nav-menu {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
+  .nav-container { flex-wrap: wrap; height: auto; padding: 12px 0; }
+  .nav-menu { gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .hero { min-height: 260px; }
+  .hero-content h1 { font-size: 2rem; }
+  .travel-grid { grid-template-columns: 1fr; }
 }

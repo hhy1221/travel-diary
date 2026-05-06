@@ -5,17 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof title !== 'undefined' ? title : '旅途笔记' %></title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo">
-        <span class="logo-text">旅途笔记</span>
-      </a>
+      <a href="/" class="nav-logo">✈ 旅途<span>笔记</span></a>
       <ul class="nav-menu">
+        <li><a href="/">首页</a></li>
         <% if (currentUser) { %>
-          <li><a href="/create">✍️ 写游记</a></li>
-          <li><a href="/my">👤 我的</a></li>
+          <li><a href="/create">写游记</a></li>
+          <li>
+  <a href="/notifications" style="position: relative;">
+    🔔 通知
+    <% if (typeof unreadCount !== 'undefined' && unreadCount > 0) { %>
+      <span style="position: absolute; top: -6px; right: -12px; background: var(--accent); color: white; font-size: 0.7rem; padding: 1px 6px; border-radius: 10px;">
+        <%= unreadCount %>
+      </span>
+    <% } %>
+  </a>
+</li>
+          
+          <li><a href="/my">我的</a></li>
           <li><a href="/logout">退出</a></li>
           <li class="nav-user"><%= currentUser.username %></li>
         <% } else { %>
@@ -25,13 +36,12 @@
       </ul>
     </div>
   </nav>
-  <div style="background: white; padding: 15px 20px; border-bottom: 1px solid #eee; margin-bottom: 20px;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <form action="/search" method="GET" style="display: flex; gap: 10px;">
-      <input type="text" name="q" placeholder="搜索游记标题或目的地..." value="<%= typeof query !== 'undefined' ? query : '' %>" 
-             style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
-      <button type="submit" class="btn btn-primary">搜索</button>
+
+  <div class="search-bar">
+    <form action="/search" method="GET">
+      <input type="text" name="q" placeholder="搜索目的地、游记标题..." value="<%= typeof query !== 'undefined' ? query : '' %>">
+      <button type="submit">🔍 搜索</button>
     </form>
   </div>
-</div>
+
   <main class="main-content">

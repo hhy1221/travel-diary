@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<div class="card" style="text-align: center; margin-bottom: 30px;">
+  <h1 style="margin-bottom: 5px;"><%= profileUser.username %></h1>
+  <p style="color: var(--light);">加入于 <%= profileUser.createdAt.toLocaleDateString('zh-CN') %></p>
+  <p style="color: var(--light);">共发表 <strong><%= travels.length %></strong> 篇游记 | 收藏 <strong><%= favorites.length %></strong> 篇</p>
+</div>
+
+<h2 class="section-title">📌 TA 的游记</h2>
+<% if (travels.length === 0) { %>
+  <div class="card" style="text-align: center;">TA 还没有发布游记</div>
+<% } else { %>
+  <div class="travel-grid">
+    <% travels.forEach(function(travel) { %>
+      <div class="travel-card">
+        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <div class="card-body">
+          <span class="tag"><%= travel.category %></span>
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <p style="color: var(--light);">目的地：<%= travel.destination %></p>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<h2 class="section-title">⭐ TA 的收藏</h2>
+<% if (favorites.length === 0) { %>
+  <div class="card" style="text-align: center;">TA 还没有收藏游记</div>
+<% } else { %>
+  <div class="travel-grid">
+    <% favorites.forEach(function(travel) { %>
+      <div class="travel-card">
+        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <div class="card-body">
+          <span class="tag"><%= travel.category %></span>
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <p style="color: var(--light);">目的地：<%= travel.destination %></p>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

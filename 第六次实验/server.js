@@ -11,6 +11,7 @@ const app = express();
 const User = require('./models/User');
 const Travel = require('./models/Travel');
 const Comment = require('./models/Comment');
+const Notification = require('./models/Notification');
 
 // ========== 连接 MongoDB ==========
 // ⚠️ 请把下面这行里的 yourname 和 yourpassword 换成你自己的 MongoDB 用户名和密码
@@ -65,8 +66,21 @@ app.use(session({
 }));
 
 // 将 session 中的用户信息传给所有页面
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  if (req.session.user) {
+    try {
+      const unreadCount = await Notification.countDocuments({
+        recipient: req.session.user.id,
+        read: false
+      });
+      res.locals.unreadCount = unreadCount;
+    } catch (err) {
+      res.locals.unreadCount = 0;
+    }
+  } else {
+    res.locals.unreadCount = 0;
+  }
   next();
 });
 
@@ -89,11 +103,13 @@ app.get('/', async (req, res) => {
       totalPages: Math.ceil(total / limit),
       query: ''
     });
+    
   } catch (err) {
     console.error(err);
     res.redirect('/');
   }
 });
+
 // ========== 搜索游记 ==========
 app.get('/search', async (req, res) => {
   const query = req.query.q || '';
@@ -123,6 +139,23 @@ app.get('/search', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.redirect('/');
+  }
+});
+
+// ========== API：加载更多游记（无限滚动） ==========
+app.get('/api/travels', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 4;  // 每页数量，与首页一致
+  try {
+    const travels = await Travel.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();  // 返回普通 JS 对象，提高性能
+    res.json(travels);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '加载失败' });
   }
 });
 // ========== 注册页面 ==========
@@ -259,7 +292,13 @@ app.get('/travel/:id', async (req, res) => {
     
     const comments = await Comment.find({ travel: travel._id }).sort({ createdAt: -1 });
     
-    // 获取当前用户的收藏列表（如果已登录）
+    // 相关推荐：相同目的地，排除当前游记，最多4篇
+    const relatedTravels = await Travel.find({
+      destination: travel.destination,
+      _id: { $ne: travel._id }
+    }).limit(4).lean();
+    
+    // 获取当前用户的收藏列表
     let favorites = [];
     if (req.session.user) {
       const user = await User.findById(req.session.user.id);
@@ -270,7 +309,8 @@ app.get('/travel/:id', async (req, res) => {
       title: travel.title + ' - 旅途笔记',
       travel: travel,
       comments: comments,
-      favorites: favorites
+      favorites: favorites,
+      relatedTravels: relatedTravels
     });
   } catch (err) {
     console.error(err);
@@ -280,19 +320,28 @@ app.get('/travel/:id', async (req, res) => {
 // 提交评论
 app.post('/travel/:id/comment', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-  
   try {
     const travel = await Travel.findById(req.params.id);
     if (!travel) return res.status(404).send('游记不存在');
-    
+
     const comment = new Comment({
       content: req.body.content,
       author: req.session.user.id,
       authorName: req.session.user.username,
       travel: travel._id
     });
-    
     await comment.save();
+
+    // 如果不是给自己评论，就发通知给游记作者
+    if (travel.author.toString() !== req.session.user.id) {
+      await Notification.create({
+        recipient: travel.author,
+        sender: req.session.user.id,
+        type: 'comment',
+        travel: travel._id
+      });
+    }
+
     res.redirect('/travel/' + travel._id);
   } catch (err) {
     console.error(err);
@@ -363,21 +412,33 @@ app.post('/travel/:id/edit', cpUpload, async (req, res) => {
 // ========== 点赞/取消点赞 ==========
 app.post('/travel/:id/like', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-  
   try {
     const travel = await Travel.findById(req.params.id);
     if (!travel) return res.status(404).send('游记不存在');
-    
+
     const userId = req.session.user.id;
     const index = travel.likes.indexOf(userId);
-    
+
     if (index === -1) {
+      // 点赞
       travel.likes.push(userId);
+      await travel.save();
+
+      // 如果不是给自己点赞，就发通知给游记作者
+      if (travel.author.toString() !== userId) {
+        await Notification.create({
+          recipient: travel.author,
+          sender: userId,
+          type: 'like',
+          travel: travel._id
+        });
+      }
     } else {
+      // 取消点赞
       travel.likes.splice(index, 1);
+      await travel.save();
     }
-    
-    await travel.save();
+
     res.redirect('/travel/' + travel._id);
   } catch (err) {
     console.error(err);
@@ -442,6 +503,59 @@ app.get('/my', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.redirect('/');
+  }
+});
+// ========== 用户个人主页 ==========
+app.get('/user/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).send('用户不存在');
+    
+    const travels = await Travel.find({ author: user._id }).sort({ createdAt: -1 });
+    const favorites = await Travel.find({ _id: { $in: user.favorites } }).sort({ createdAt: -1 });
+    
+    res.render('user', {
+      title: user.username + ' 的个人主页 - 旅途笔记',
+      profileUser: user,
+      travels: travels,
+      favorites: favorites
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+// ========== 通知列表 ==========
+app.get('/notifications', async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    const notifications = await Notification.find({ recipient: req.session.user.id })
+      .populate('sender', 'username')
+      .populate('travel', 'title')
+      .sort({ createdAt: -1 });
+    
+    res.render('notifications', { 
+      title: '通知 - 旅途笔记',
+      notifications: notifications
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+
+// 全部标记为已读
+app.post('/notifications/read-all', async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    await Notification.updateMany(
+      { recipient: req.session.user.id, read: false },
+      { read: true }
+    );
+    res.redirect('/notifications');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/notifications');
   }
 });
 // ========== 退出登录 ==========

@@ -1,46 +1,171 @@
 <%- include('partials/header') %>
 
-<div class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hero-bg.jpg'); background-size: cover; color: white; padding: 80px 20px; text-align: center; border-radius: 10px; margin-bottom: 30px;">
-  <h1 style="font-size: 2.5rem; margin-bottom: 15px;">探索世界，记录旅程</h1>
-  <p style="font-size: 1.2rem; margin-bottom: 25px;">分享你的旅行故事，发现下一站的灵感</p>
-  <% if (!currentUser) { %>
-    <a href="/register" class="btn btn-primary" style="margin-right: 10px;">立即注册</a>
-    <a href="/login" class="btn btn-secondary">登录</a>
-  <% } %>
-</div>
-
-<h2 style="margin-bottom: 20px; border-left: 4px solid var(--accent-color); padding-left: 15px;">📌 最新游记</h2>
-
-<% if (travels.length === 0) { %>
-  <div class="card" style="text-align: center; padding: 40px;">
-    <p style="font-size: 1.1rem; color: #7f8c8d;">还没有人分享游记，成为第一个分享者吧！</p>
-  </div>
-<% } else { %>
-  <% travels.forEach(function(travel) { %>
-    <div class="card" style="display: flex; gap: 20px; align-items: center;">
-      <img src="<%= travel.image %>" alt="<%= travel.title %>" style="width: 200px; height: 150px; object-fit: cover; border-radius: 5px;">
-      <div style="flex: 1;">
-        <span style="background: var(--accent-color); color: white; padding: 3px 10px; border-radius: 3px; font-size: 0.8rem;"><%= travel.category %></span>
-        <h3 style="margin: 10px 0;"><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
-        <p style="color: #7f8c8d;">目的地：<%= travel.destination %></p>
-        <p style="color: #7f8c8d; font-size: 0.9rem;">
-          作者：<%= travel.authorName %> | 
-          <%= travel.createdAt.toLocaleDateString('zh-CN') %>
-        </p>
-      </div>
-    </div>
-  <% }); %>
-<% } %>
-<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
-  <div style="text-align: center; margin-top: 30px;">
-    <% for (let i = 1; i <= totalPages; i++) { %>
-      <a href="?page=<%= i %>" 
-         style="display: inline-block; padding: 8px 14px; margin: 0 5px; border-radius: 5px; 
-                background: <%= i === currentPage ? 'var(--accent-color)' : '#eee' %>; 
-                color: <%= i === currentPage ? 'white' : '#333' %>;">
-        <%= i %>
-      </a>
+<!-- ===== 横幅轮播区 ===== -->
+<div class="hero" style="background-image: url('/images/hero11.jpg');">
+  <div class="hero-content">
+    <h1>探索世界，记录旅程</h1>
+    <p>发现下一站的灵感，分享你的旅行故事</p>
+    <% if (!currentUser) { %>
+      <a href="/register" class="btn btn-primary" style="margin-right: 12px;">立即注册</a>
+      <a href="/login" class="btn btn-outline">登录</a>
+    <% } else { %>
+      <a href="/create" class="btn btn-primary">写一篇游记</a>
     <% } %>
   </div>
+</div>
+
+<!-- ===== 热门目的地 ===== -->
+<h2 class="section-title">热门目的地</h2>
+<div class="dest-grid">
+  <a href="/search?q=大理" class="dest-card">
+    <img src="/images/dali.jpg" alt="大理">
+    <div class="info"><h3>大理</h3><p style="color:#636e72;">风花雪月</p></div>
+  </a>
+  <a href="/search?q=东京" class="dest-card">
+    <img src="/images/tokyo.jpg" alt="东京">
+    <div class="info"><h3>东京</h3><p style="color:#636e72;">霓虹都市</p></div>
+  </a>
+  <a href="/search?q=成都" class="dest-card">
+    <img src="/images/chengdu.jpg" alt="成都">
+    <div class="info"><h3>成都</h3><p style="color:#636e72;">美食天堂</p></div>
+  </a>
+  <a href="/search?q=三亚" class="dest-card">
+    <img src="/images/sanya.jpg" alt="三亚">
+    <div class="info"><h3>三亚</h3><p style="color:#636e72;">冬日暖阳</p></div>
+  </a>
+</div>
+
+<!-- ===== 热门游记 ===== -->
+<% if (typeof popularTravels !== 'undefined' && popularTravels.length > 0) { %>
+  <h2 class="section-title">热门游记</h2>
+  <div class="travel-grid">
+    <% popularTravels.forEach(function(travel) { %>
+      <div class="travel-card">
+        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <div class="card-body">
+          <span class="tag"><%= travel.category %></span>
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <p style="color:#636e72; font-size:0.9rem;">目的地：<%= travel.destination %> | 👁 <%= travel.views %> | ❤ <%= travel.likes.length %></p>
+        </div>
+      </div>
+    <% }); %>
+  </div>
 <% } %>
+
+<!-- ===== 最新游记（分页） ===== -->
+<h2 class="section-title">最新游记</h2>
+<% if (travels.length === 0) { %>
+  <div style="text-align:center; padding: 50px; color: #636e72;">
+    <p style="font-size:1.2rem;">还没有人分享游记，成为第一个探索者吧！</p>
+  </div>
+<% } else { %>
+  <div class="travel-grid">
+    <% travels.forEach(function(travel) { %>
+      <div class="travel-card">
+        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <div class="card-body">
+          <span class="tag"><%= travel.category %></span>
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <p style="color:#636e72; font-size:0.9rem;">
+            目的地：<%= travel.destination %> | 作者：<a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a>
+          </p>
+          <p style="color:#636e72; font-size:0.85rem; margin-top:4px;">
+            👁 <%= travel.views %> | ❤ <%= travel.likes.length %> | <%= travel.createdAt.toLocaleDateString('zh-CN') %>
+          </p>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<!-- 无限滚动加载指示器 -->
+<div id="load-more-sentinel" style="text-align: center; padding: 20px; display: none;">
+  <span id="loading-text" style="color: var(--light);">正在加载更多游记...</span>
+</div>
+
+<script>
+  (function() {
+    var currentPage = 1;
+    var totalPages = <%= typeof totalPages !== 'undefined' ? totalPages : 1 %>;
+    var isLoading = false;
+    var sentinel = document.getElementById('load-more-sentinel');
+    var loadingText = document.getElementById('loading-text');
+
+    // 如果只有一页，隐藏加载指示器
+    if (currentPage >= totalPages) {
+      sentinel.style.display = 'none';
+      return;
+    }
+
+    function loadNextPage() {
+      if (isLoading) return;
+      if (currentPage >= totalPages) {
+        sentinel.innerHTML = '<span style="color: var(--light);">—— 已加载全部游记 ——</span>';
+        sentinel.style.display = 'block';
+        return;
+      }
+      isLoading = true;
+      sentinel.style.display = 'block';
+      loadingText.textContent = '正在加载更多游记...';
+
+      fetch('/api/travels?page=' + (currentPage + 1))
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.length === 0) {
+            sentinel.innerHTML = '<span style="color: var(--light);">—— 已加载全部游记 ——</span>';
+            return;
+          }
+          // 容器：找到 .travel-grid 元素（最新游记列表）
+          var grid = document.querySelector('.travel-grid');
+          if (!grid) {
+            grid = document.createElement('div');
+            grid.className = 'travel-grid';
+            // 插入到 main-content 最后面，第二个 .travel-grid 之后可能还有其他内容，谨慎插入
+            var main = document.querySelector('.main-content');
+            if (main) main.appendChild(grid);
+          }
+          data.forEach(function(travel) {
+            var card = document.createElement('div');
+            card.className = 'travel-card';
+            card.innerHTML = `
+              <img src="${travel.image}" alt="${travel.title}">
+              <div class="card-body">
+                <span class="tag">${travel.category}</span>
+                <h3><a href="/travel/${travel._id}">${travel.title}</a></h3>
+                <p style="color:var(--light); font-size:0.9rem;">目的地：${travel.destination} | 作者：${travel.authorName}</p>
+                <p style="color:var(--light); font-size:0.85rem; margin-top:4px;">👁 ${travel.views || 0} | ❤ ${travel.likes ? travel.likes.length : 0} | ${new Date(travel.createdAt).toLocaleDateString('zh-CN')}</p>
+              </div>
+            `;
+            grid.appendChild(card);
+          });
+          currentPage++;
+          isLoading = false;
+          if (currentPage >= totalPages) {
+            sentinel.innerHTML = '<span style="color: var(--light);">—— 已加载全部游记 ——</span>';
+          } else {
+            sentinel.style.display = 'none';  // 隐藏指示器，等待下一次触底
+          }
+        })
+        .catch(function() {
+          loadingText.textContent = '加载失败，请稍后再试';
+          isLoading = false;
+        });
+    }
+
+    // 使用 IntersectionObserver 监听 sentinel 是否进入可视区域
+    var observer = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        loadNextPage();
+      }
+    }, { rootMargin: '200px' }); // 提前200px触发，体验更流畅
+
+    observer.observe(sentinel);
+
+    // 第一次检查：如果 sentinel 已经在可视区域（例如页面内容很少时），主动加载
+    if (sentinel.getBoundingClientRect().top < window.innerHeight + 200) {
+      loadNextPage();
+    }
+  })();
+</script>
+
 <%- include('partials/footer') %>
