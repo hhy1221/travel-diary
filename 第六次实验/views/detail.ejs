@@ -38,19 +38,21 @@
   
   <hr style="margin:20px 0; opacity:0.3;">
   
-  <div style="font-size:1.1rem; line-height:1.9; white-space:pre-wrap;"><%= travel.content %></div>
+  <div style="font-size:1.1rem; line-height:1.9;"><%- travel.content %></div>
   
   <!-- 图片画廊 -->
   <% if (travel.gallery && travel.gallery.length > 0) { %>
     <div style="margin:25px 0;">
       <h3 style="margin-bottom:12px;">📷 旅途剪影</h3>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <%# 以下画廊响应式样式由"Trae AI (DeepSeek-V4-Pro)"生成 %>
+      <div class="gallery-grid" style="display:flex; gap:10px; flex-wrap:wrap;">
         <% travel.gallery.forEach(function(img) { %>
-          <a href="<%= img %>" target="_blank">
-            <img src="<%= img %>" alt="旅途图片" style="width:150px; height:120px; object-fit:cover; border-radius:8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <a href="<%= img %>" target="_blank" style="flex: 0 0 auto;">
+            <img src="<%= img %>" alt="旅途图片" class="gallery-thumb" style="width:150px; height:120px; object-fit:cover; border-radius:8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
           </a>
         <% }); %>
       </div>
+      <%# AI 生成结束 %>
     </div>
   <% } %>
 </div>
@@ -132,10 +134,25 @@
   <p style="color:var(--light);">暂无评论，抢个沙发吧~</p>
 <% } else { %>
   <% comments.forEach(function(comment) { %>
-    <div class="comment-card">
-      <strong><%= comment.authorName %></strong>
-      <span style="color:var(--light); font-size:0.85rem; margin-left:10px;"><%= comment.createdAt.toLocaleDateString('zh-CN') %></span>
-      <p style="margin-top:8px;"><%= comment.content %></p>
+    <div class="comment-card" style="display: flex; align-items: flex-start; gap: 15px;">
+      <div style="flex: 1;">
+        <strong><%= comment.authorName %></strong>
+        <span style="color: var(--light); font-size: 0.85rem; margin-left: 10px;"><%= comment.createdAt.toLocaleDateString('zh-CN') %></span>
+        <p style="margin-top: 8px;"><%= comment.content %></p>
+      </div>
+      <div style="text-align: center; min-width: 50px;">
+        <% if (currentUser) { %>
+          <form action="/comment/<%= comment._id %>/like" method="POST">
+            <% const hasLikedComment = comment.likes.some(id => id.toString() === currentUser.id); %>
+            <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; color: <%= hasLikedComment ? '#e94560' : '#b2bec3' %>;" title="<%= hasLikedComment ? '取消点赞' : '点赞' %>">
+              <%= hasLikedComment ? '❤️' : '🤍' %>
+            </button>
+          </form>
+        <% } else { %>
+          <span style="font-size: 1.2rem; color: #b2bec3;">🤍</span>
+        <% } %>
+        <div style="font-size: 0.85rem; color: var(--light);"><%= comment.likes.length %></div>
+      </div>
     </div>
   <% }); %>
 <% } %>

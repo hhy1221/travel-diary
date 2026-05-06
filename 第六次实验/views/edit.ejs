@@ -40,10 +40,38 @@
     </div>
     <div class="form-group">
       <label>正文</label>
-      <textarea name="content" rows="12" required><%= travel.content %></textarea>
+      <input type="hidden" name="content" id="content-input" value="<%= travel.content.replace(/"/g, '&quot;') %>">
+      <div id="editor-container" style="height: 400px; background: rgba(255,255,255,0.9); border-radius: 10px;"></div>
     </div>
     <button type="submit" class="btn btn-primary" style="width:100%;">保存修改</button>
   </form>
+  <script>
+  var quill = new Quill('#editor-container', {
+    theme: 'snow',
+    placeholder: '分享你的旅行故事...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'header': [1, 2, false] }],
+        ['link', 'image'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ]
+    }
+  });
+
+  // 把已有内容加载到编辑器
+  var existingContent = document.getElementById('content-input').value;
+  if (existingContent) {
+    quill.root.innerHTML = existingContent;
+  }
+
+  // 提交时同步内容
+  var form = document.querySelector('form');
+  form.onsubmit = function() {
+    document.getElementById('content-input').value = quill.root.innerHTML;
+  };
+</script>
 </div>
 
 <%- include('partials/footer') %>

@@ -14,15 +14,18 @@ const Comment = require('./models/Comment');
 const Notification = require('./models/Notification');
 
 // ========== 连接 MongoDB ==========
-// ⚠️ 请把下面这行里的 yourname 和 yourpassword 换成你自己的 MongoDB 用户名和密码
-mongoose.connect('mongodb://127.0.0.1:27017/travel', {
-  auth: { username: 'huanghanyang', password: 'S20061221hhy' },
-  authSource: 'admin'
-}).then(() => {
+// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
+const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/travel';
+const mongoOptions = process.env.MONGODB_URI
+  ? {}
+  : { auth: { username: 'huanghanyang', password: 'S20061221hhy' }, authSource: 'admin' };
+
+mongoose.connect(mongoURI, mongoOptions).then(() => {
   console.log('MongoDB 连接成功');
 }).catch(err => {
   console.log('MongoDB 连接失败：', err);
 });
+// AI 生成结束
 
 // ========== 确保上传文件夹存在 ==========
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
@@ -525,6 +528,30 @@ app.get('/user/:id', async (req, res) => {
     res.redirect('/');
   }
 });
+// ========== 评论点赞/取消点赞 ==========
+app.post('/comment/:id/like', async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) return res.status(404).send('评论不存在');
+
+    const userId = req.session.user.id;
+    const index = comment.likes.indexOf(userId);
+
+    if (index === -1) {
+      comment.likes.push(userId);
+    } else {
+      comment.likes.splice(index, 1);
+    }
+
+    await comment.save();
+    // 完成后重定向回游记详情页（需要知道 travel id）
+    res.redirect('/travel/' + comment.travel);
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
 // ========== 通知列表 ==========
 app.get('/notifications', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
@@ -558,6 +585,53 @@ app.post('/notifications/read-all', async (req, res) => {
     res.redirect('/notifications');
   }
 });
+
+// ========== 个人设置页面 ==========
+app.get('/settings', async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    const user = await User.findById(req.session.user.id);
+    res.render('settings', { title: '个人设置 - 旅途笔记', user: user });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+});
+
+// 处理设置提交
+app.post('/settings', upload.single('avatar'), async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    const user = await User.findById(req.session.user.id);
+    if (!user) return res.redirect('/login');
+
+    // 更新简介
+    user.bio = req.body.bio || '';
+
+    // 更新头像（如果上传了文件）
+    if (req.file) {
+      user.avatar = '/uploads/' + req.file.filename;
+    }
+
+    await user.save();
+    res.render('settings', { 
+      title: '个人设置 - 旅途笔记', 
+      user: user,
+      success: '修改已保存！' 
+    });
+  } catch (err) {
+    console.error(err);
+    res.render('settings', { 
+      title: '个人设置 - 旅途笔记', 
+      user: await User.findById(req.session.user.id),
+      error: '保存失败，请稍后再试' 
+    });
+  }
+});
+// ========== 功能介绍页面 ==========
+app.get('/features', (req, res) => {
+  res.render('features', { title: '功能介绍 - 旅途笔记' });
+});
 // ========== 退出登录 ==========
 app.get('/logout', (req, res) => {
   req.session.destroy();
@@ -565,7 +639,9 @@ app.get('/logout', (req, res) => {
 });
 
 // ========== 启动服务器 ==========
-const PORT = 12399;
+// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
+const PORT = process.env.PORT || 12399;
+// AI 生成结束
 app.listen(PORT, () => {
   console.log(`服务器运行在 http://localhost:${PORT}`);
 });

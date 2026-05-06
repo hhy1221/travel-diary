@@ -19,6 +19,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+    bio: {
+    type: String,
+    default: '',
+    maxlength: 200
+  },
+  avatar: {
+    type: String,
+    default: '/images/default-avatar.png'
+  },
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Travel'

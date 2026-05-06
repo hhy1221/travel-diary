@@ -1,7 +1,11 @@
 <%- include('partials/header') %>
 
 <div class="card" style="text-align: center; margin-bottom: 30px;">
+  <img src="<%= profileUser.avatar %>" alt="头像" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; margin-bottom: 15px;">
   <h1 style="margin-bottom: 5px;"><%= profileUser.username %></h1>
+  <% if (profileUser.bio) { %>
+    <p style="color: var(--light); margin-bottom: 10px;"><%= profileUser.bio %></p>
+  <% } %>
   <p style="color: var(--light);">加入于 <%= profileUser.createdAt.toLocaleDateString('zh-CN') %></p>
   <p style="color: var(--light);">共发表 <strong><%= travels.length %></strong> 篇游记 | 收藏 <strong><%= favorites.length %></strong> 篇</p>
 </div>

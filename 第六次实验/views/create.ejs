@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 
 <div class="card" style="max-width:800px; margin:0 auto;">
   <h2 style="margin-bottom:25px; color:var(--primary);">✍️ 写一篇新游记</h2>
@@ -30,10 +31,36 @@
     </div>
     <div class="form-group">
       <label>游记正文</label>
-      <textarea name="content" rows="12" required placeholder="分享你的旅行故事..."></textarea>
+      <!-- 隐藏的原始 textarea，用于提交表单 -->
+      <input type="hidden" name="content" id="content-input">
+      <!-- Quill 编辑器容器 -->
+      <div id="editor-container" style="height: 400px; background: rgba(255,255,255,0.9); border-radius: 10px;"></div>
     </div>
     <button type="submit" class="btn btn-primary" style="width:100%;">发布游记</button>
   </form>
+  <script>
+  // 初始化 Quill 编辑器
+  var quill = new Quill('#editor-container', {
+    theme: 'snow',
+    placeholder: '分享你的旅行故事...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'header': [1, 2, false] }],
+        ['link', 'image'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ]
+    }
+  });
+
+  // 提交表单前，把编辑器内容写入隐藏的 input
+  var form = document.querySelector('form');
+  form.onsubmit = function() {
+    var contentInput = document.getElementById('content-input');
+    contentInput.value = quill.root.innerHTML;
+  };
+</script>
 </div>
 
 <%- include('partials/footer') %>

@@ -1,0 +1,198 @@
+<%- include('partials/header') %>
+
+<!-- 顶部横幅 -->
+<div class="hero" style="background-image: url('/images/hero.jpg'); min-height: 250px;">
+  <div class="hero-content">
+    <h1>✨ 旅途笔记 · 功能亮点</h1>
+    <p>一个用 Node.js + Express + MongoDB 构建的全功能旅游社交平台</p>
+  </div>
+</div>
+
+<!-- 功能分类 -->
+<div class="card" style="margin-bottom: 30px;">
+  <h2 class="section-title" style="margin-top: 0;">⚙️ 核心架构与高级交互</h2>
+  <div class="travel-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🛢 MongoDB + Mongoose</h3>
+        <p style="color:var(--light);">使用 ODM 定义数据模型，密码自动加密，关联查询用户、游记、评论、通知。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🧩 MVC 分层架构</h3>
+        <p style="color:var(--light);">模型-视图-控制器清晰分离，路由与业务逻辑独立，便于维护和扩展。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🎨 EJS 动态渲染</h3>
+        <p style="color:var(--light);">服务端模板引擎，支持条件、循环、模板包含，所有页面动态生成。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🔐 注册与登录</h3>
+        <p style="color:var(--light);">bcrypt 密码加密，session 会话保持，中间件统一鉴权，安全可靠。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>♾️ 无限滚动加载</h3>
+        <p style="color:var(--light);">IntersectionObserver 监测视口，动态请求 JSON 数据，自动追加游记卡片。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🗺️ 目的地交互地图</h3>
+        <p style="color:var(--light);">集成 Leaflet.js，通过地理编码自动定位目的地并标记，免费开源无需 API Key。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🔔 实时通知系统</h3>
+        <p style="color:var(--light);">点赞、评论即时生成通知，导航栏显示未读数量，支持一键全部已读。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>✍️ 富文本编辑器</h3>
+        <p style="color:var(--light);">集成 Quill.js，支持加粗、斜体、标题、列表，编辑回显完美兼容。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 30px;">
+  <h2 class="section-title" style="margin-top: 0;">📝 内容管理</h2>
+  <div class="travel-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>📸 游记发布与编辑</h3>
+        <p style="color:var(--light);">支持封面图、多张附图上传（Multer 分字段处理），分类选择，权限验证。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🖼️ 图片画廊</h3>
+        <p style="color:var(--light);">游记详情页以网格展示多张图片，支持灯箱点击放大，编辑时可预览与替换。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🔍 全文搜索</h3>
+        <p style="color:var(--light);">基于 MongoDB 正则查询，支持标题、目的地模糊搜索，结果分页展示。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🏷️ 分类筛选</h3>
+        <p style="color:var(--light);">自然风光、城市漫步、美食之旅、历史文化等分类，发布与搜索均支持。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>📄 分页与无限滚动</h3>
+        <p style="color:var(--light);">后端 skip/limit 分页，前端无限滚动动态翻页，流畅体验。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 30px;">
+  <h2 class="section-title" style="margin-top: 0;">👥 社交互动与用户体系</h2>
+  <div class="travel-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>❤️ 点赞系统</h3>
+        <p style="color:var(--light);">数组存储用户 ID，前后端联动判断已点赞状态，按钮样式即时切换。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>💬 评论系统</h3>
+        <p style="color:var(--light);">独立 Comment 模型，关联游记与用户，按时间排序显示，发表后实时刷新。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>⭐ 收藏系统</h3>
+        <p style="color:var(--light);">用户模型内嵌收藏数组，个人中心分“我的游记”与“我的收藏”展示。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🔔 通知列表</h3>
+        <p style="color:var(--light);">按时间展示所有通知，区分点赞/评论类型，已读状态一目了然。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>👤 用户个人主页</h3>
+        <p style="color:var(--light);">公开显示头像、简介、个人游记、收藏列表，点击作者名即可访问。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>⚙️ 个人资料编辑</h3>
+        <p style="color:var(--light);">支持修改头像（上传裁剪）、个人简介，实时保存并全局生效。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 30px;">
+  <h2 class="section-title" style="margin-top: 0;">🎨 界面设计与用户体验</h2>
+  <div class="travel-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🪟 毛玻璃半透明卡片</h3>
+        <p style="color:var(--light);">backdrop-filter 模糊效果，rgba 半透明白色背景，圆角阴影统一风格。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🌄 全屏固定背景图</h3>
+        <p style="color:var(--light);">沉浸式旅游大片背景，滚动时固定不动，半透明遮罩确保文字清晰。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🗺️ 热门目的地卡片</h3>
+        <p style="color:var(--light);">首页栅格导航，点击即搜索对应目的地，悬停上浮动画。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>🔥 热门游记推荐</h3>
+        <p style="color:var(--light);">按浏览量排序展示，自动标记浏览数与点赞数。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>📌 相关游记推荐</h3>
+        <p style="color:var(--light);">详情页根据相同目的地智能推荐其他游记。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>✨ 加载动画</h3>
+        <p style="color:var(--light);">卡片淡入上浮，错位延迟，滚动至底部自动加载新内容。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>⬆️ 回到顶部</h3>
+        <p style="color:var(--light);">固定右下角按钮，滚动超过一屏显示，点击平滑返回顶部。</p>
+      </div>
+    </div>
+    <div class="travel-card">
+      <div class="card-body">
+        <h3>📱 响应式布局</h3>
+        <p style="color:var(--light);">Flexbox/Grid 自适应，手机、平板、桌面均可流畅浏览。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
