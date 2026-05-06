@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+
+<h2 style="border-left: 4px solid var(--accent-color); padding-left: 15px; margin-bottom: 25px;">
+  👤 我的游记
+</h2>
+
+<% if (myTravels.length === 0) { %>
+  <div class="card" style="text-align: center; padding: 40px;">
+    <p>你还没有发布任何游记，<a href="/create">去写第一篇</a>吧！</p>
+  </div>
+<% } else { %>
+  <% myTravels.forEach(function(travel) { %>
+    <div class="card" style="display: flex; gap: 20px; align-items: center;">
+      <img src="<%= travel.image %>" alt="<%= travel.title %>" style="width: 200px; height: 150px; object-fit: cover; border-radius: 5px;">
+      <div style="flex: 1;">
+        <span style="background: var(--accent-color); color: white; padding: 3px 10px; border-radius: 3px; font-size: 0.8rem;"><%= travel.category %></span>
+        <h3 style="margin: 10px 0;"><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+        <p style="color: #7f8c8d;">目的地：<%= travel.destination %></p>
+        <p style="color: #7f8c8d; font-size: 0.9rem;">
+          <%= travel.createdAt.toLocaleDateString('zh-CN') %>
+        </p>
+        <a href="/travel/<%= travel._id %>/edit" class="btn btn-secondary" style="margin-right: 5px;">编辑</a>
+        <form action="/travel/<%= travel._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('确定删除？');">
+          <button type="submit" class="btn btn-primary" style="background: #e74c3c;">删除</button>
+        </form>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+<h2 style="border-left: 4px solid var(--accent-color); padding-left: 15px; margin-top: 40px; margin-bottom: 25px;">
+  ⭐ 我的收藏
+</h2>
+
+<% if (!favorites || favorites.length === 0) { %>
+  <div class="card" style="text-align: center; padding: 40px;">
+    <p>你还没有收藏任何游记，<a href="/">去看看大家的分享</a>吧！</p>
+  </div>
+<% } else { %>
+  <% favorites.forEach(function(travel) { %>
+    <div class="card" style="display: flex; gap: 20px; align-items: center;">
+      <img src="<%= travel.image %>" alt="<%= travel.title %>" style="width: 200px; height: 150px; object-fit: cover; border-radius: 5px;">
+      <div style="flex: 1;">
+        <span style="background: var(--accent-color); color: white; padding: 3px 10px; border-radius: 3px; font-size: 0.8rem;"><%= travel.category %></span>
+        <h3 style="margin: 10px 0;"><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+        <p style="color: #7f8c8d;">目的地：<%= travel.destination %></p>
+        <p style="color: #7f8c8d; font-size: 0.9rem;">
+          作者：<%= travel.authorName %>
+        </p>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+<%- include('partials/footer') %>

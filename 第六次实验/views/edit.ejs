@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+  <h2 style="text-align: center; margin-bottom: 25px;">编辑游记</h2>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div style="background: #ffeaa7; padding: 10px; border-radius: 5px; margin-bottom: 15px; color: #d63031;">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form action="/travel/<%= travel._id %>/edit" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">游记标题</label>
+      <input type="text" name="title" id="title" value="<%= travel.title %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="destination">目的地</label>
+      <input type="text" name="destination" id="destination" value="<%= travel.destination %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="category">旅行类型</label>
+      <select name="category" id="category">
+        <% var categories = ['自然风光', '城市漫步', '美食之旅', '历史文化', '其他']; %>
+        <% categories.forEach(function(cat) { %>
+          <option value="<%= cat %>" <%= travel.category === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>当前封面图片</label>
+      <img src="<%= travel.image %>" alt="当前封面" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+      <label for="image">更换封面图片（可选）</label>
+      <input type="file" name="image" id="image" accept="image/*">
+    </div>
+        <div class="form-group">
+      <label>更多图片</label>
+      <% if (travel.gallery && travel.gallery.length > 0) { %>
+        <p>当前已有图片：</p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+          <% travel.gallery.forEach(function(img) { %>
+            <img src="<%= img %>" style="width: 100px; height: 80px; object-fit: cover; border-radius: 5px;">
+          <% }); %>
+        </div>
+      <% } %>
+      <label for="gallery">添加更多图片（可多选）</label>
+      <input type="file" name="gallery" id="gallery" accept="image/*" multiple>
+    </div>
+
+    <div class="form-group">
+      <label for="content">游记正文</label>
+      <textarea name="content" id="content" rows="12" required><%= travel.content %></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%;">保存修改</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

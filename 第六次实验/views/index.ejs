@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+
+<div class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hero-bg.jpg'); background-size: cover; color: white; padding: 80px 20px; text-align: center; border-radius: 10px; margin-bottom: 30px;">
+  <h1 style="font-size: 2.5rem; margin-bottom: 15px;">探索世界，记录旅程</h1>
+  <p style="font-size: 1.2rem; margin-bottom: 25px;">分享你的旅行故事，发现下一站的灵感</p>
+  <% if (!currentUser) { %>
+    <a href="/register" class="btn btn-primary" style="margin-right: 10px;">立即注册</a>
+    <a href="/login" class="btn btn-secondary">登录</a>
+  <% } %>
+</div>
+
+<h2 style="margin-bottom: 20px; border-left: 4px solid var(--accent-color); padding-left: 15px;">📌 最新游记</h2>
+
+<% if (travels.length === 0) { %>
+  <div class="card" style="text-align: center; padding: 40px;">
+    <p style="font-size: 1.1rem; color: #7f8c8d;">还没有人分享游记，成为第一个分享者吧！</p>
+  </div>
+<% } else { %>
+  <% travels.forEach(function(travel) { %>
+    <div class="card" style="display: flex; gap: 20px; align-items: center;">
+      <img src="<%= travel.image %>" alt="<%= travel.title %>" style="width: 200px; height: 150px; object-fit: cover; border-radius: 5px;">
+      <div style="flex: 1;">
+        <span style="background: var(--accent-color); color: white; padding: 3px 10px; border-radius: 3px; font-size: 0.8rem;"><%= travel.category %></span>
+        <h3 style="margin: 10px 0;"><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+        <p style="color: #7f8c8d;">目的地：<%= travel.destination %></p>
+        <p style="color: #7f8c8d; font-size: 0.9rem;">
+          作者：<%= travel.authorName %> | 
+          <%= travel.createdAt.toLocaleDateString('zh-CN') %>
+        </p>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+  <div style="text-align: center; margin-top: 30px;">
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="?page=<%= i %>" 
+         style="display: inline-block; padding: 8px 14px; margin: 0 5px; border-radius: 5px; 
+                background: <%= i === currentPage ? 'var(--accent-color)' : '#eee' %>; 
+                color: <%= i === currentPage ? 'white' : '#333' %>;">
+        <%= i %>
+      </a>
+    <% } %>
+  </div>
+<% } %>
+<%- include('partials/footer') %>

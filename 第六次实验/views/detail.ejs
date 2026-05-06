@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+
+<a href="/" style="display: inline-block; margin-bottom: 20px; color: var(--primary-color);">&larr; 返回首页</a>
+
+<div class="card">
+  <img src="<%= travel.image %>" alt="<%= travel.title %>" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 5px; margin-bottom: 20px;">
+  
+  <span style="background: var(--accent-color); color: white; padding: 4px 12px; border-radius: 3px; font-size: 0.85rem;">
+    <%= travel.category %>
+  </span>
+  
+  <h1 style="margin: 15px 0 10px;"><%= travel.title %></h1>
+  
+  <p style="color: #7f8c8d; margin-bottom: 20px;">
+    目的地：<strong><%= travel.destination %></strong> | 
+    作者：<%= travel.authorName %> | 
+    发布于：<%= travel.createdAt.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }) %>
+  </p>
+  
+  <!-- 点赞区域 -->
+  <div style="margin-bottom: 20px;">
+    <% if (currentUser) { %>
+      <form action="/travel/<%= travel._id %>/like" method="POST" style="display: inline;">
+        <% const hasLiked = currentUser && travel.likes.some(id => id.toString() === currentUser.id); %>
+        <button type="submit" class="btn" style="background: <%= hasLiked ? '#e74c3c' : '#ddd' %>; color: <%= hasLiked ? 'white' : '#333' %>;">
+          <%= hasLiked ? '❤️ 已点赞' : '🤍 点赞' %>
+        </button>
+      </form>
+    <% } else { %>
+      <a href="/login" class="btn" style="background: #ddd; color: #333;">🤍 点赞</a>
+    <% } %>
+    <span style="margin-left: 10px; color: #7f8c8d;"><%= travel.likes.length %> 人点赞</span>
+  </div>
+    <!-- 收藏区域 -->
+  <div style="margin-bottom: 20px;">
+    <% if (currentUser) { %>
+      <form action="/travel/<%= travel._id %>/favorite" method="POST" style="display: inline;">
+        <% 
+          let isFavorited = false;
+          if (currentUser && typeof favorites !== 'undefined') {
+            isFavorited = favorites.some(id => id.toString() === travel._id.toString());
+          }
+        %>
+        <button type="submit" class="btn" style="background: <%= isFavorited ? '#f39c12' : '#ddd' %>; color: <%= isFavorited ? 'white' : '#333' %>;">
+          <%= isFavorited ? '⭐ 已收藏' : '☆ 收藏' %>
+        </button>
+      </form>
+    <% } else { %>
+      <a href="/login" class="btn" style="background: #ddd; color: #333;">☆ 收藏</a>
+    <% } %>
+  </div>
+  <hr style="margin: 20px 0;">
+  
+  <div style="font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap;">
+    <%= travel.content %>
+  </div>
+</div>
+
+<!-- 如果当前登录用户是作者，显示编辑和删除按钮 -->
+<% if (currentUser && currentUser.id === travel.author._id.toString()) { %>
+  <div style="margin-top: 20px;">
+    <a href="/travel/<%= travel._id %>/edit" class="btn btn-secondary" style="margin-right: 10px;">编辑</a>
+    <form action="/travel/<%= travel._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('确定要删除这篇游记吗？');">
+      <button type="submit" class="btn btn-primary" style="background-color: #e74c3c;">删除</button>
+    </form>
+  </div>
+<% } %>
+<hr style="margin: 30px 0;">
+
+<h3>💬 评论 (<%= comments.length %>)</h3>
+
+<% if (currentUser) { %>
+  <form action="/travel/<%= travel._id %>/comment" method="POST" style="margin: 15px 0;">
+    <textarea name="content" rows="3" placeholder="说点什么吧..." required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
+    <button type="submit" class="btn btn-primary" style="margin-top: 5px;">发表评论</button>
+  </form>
+<% } else { %>
+  <p><a href="/login">登录</a>后即可发表评论。</p>
+<% } %>
+
+<% if (comments.length === 0) { %>
+  <p style="color: #7f8c8d;">暂无评论，抢个沙发吧~</p>
+<% } else { %>
+  <% comments.forEach(function(comment) { %>
+    <div class="card" style="margin-bottom: 10px; padding: 15px;">
+      <strong><%= comment.authorName %></strong>
+      <span style="color: #7f8c8d; font-size: 0.85rem; margin-left: 10px;">
+        <%= comment.createdAt.toLocaleDateString('zh-CN') %>
+      </span>
+      <p style="margin-top: 8px;"><%= comment.content %></p>
+    </div>
+  <% }); %>
+<% } %>
+<%- include('partials/footer') %>

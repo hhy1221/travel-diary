@@ -1,0 +1,20 @@
+{
+  "name": "travel-diary",
+  "version": "1.0.0",
+  "description": "旅途笔记 - 旅游日记分享网站",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "黄寒阳",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.6.1",
+    "multer": "^2.1.1"
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : '旅途笔记' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <span class="logo-text">旅途笔记</span>
+      </a>
+      <ul class="nav-menu">
+        <% if (currentUser) { %>
+          <li><a href="/create">✍️ 写游记</a></li>
+          <li><a href="/my">👤 我的</a></li>
+          <li><a href="/logout">退出</a></li>
+          <li class="nav-user"><%= currentUser.username %></li>
+        <% } else { %>
+          <li><a href="/login">登录</a></li>
+          <li><a href="/register">注册</a></li>
+        <% } %>
+      </ul>
+    </div>
+  </nav>
+  <div style="background: white; padding: 15px 20px; border-bottom: 1px solid #eee; margin-bottom: 20px;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <form action="/search" method="GET" style="display: flex; gap: 10px;">
+      <input type="text" name="q" placeholder="搜索游记标题或目的地..." value="<%= typeof query !== 'undefined' ? query : '' %>" 
+             style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+      <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+  </div>
+</div>
+  <main class="main-content">
