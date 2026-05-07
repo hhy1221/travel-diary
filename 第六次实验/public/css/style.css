@@ -688,8 +688,8 @@ img { max-width: 100%; height: auto; display: block; }
     position: fixed;
     top: 60px;
     right: 0;
-    width: 220px;
-    max-width: 75vw;
+    width: 260px;
+    max-width: 80vw;
     bottom: 0;
     flex-direction: column;
     gap: 0;
@@ -699,14 +699,13 @@ img { max-width: 100%; height: auto; display: block; }
     box-shadow: -2px 0 24px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     z-index: 999;
-    padding: 8px 0;
+    padding: 6px 0;
   }
   .nav-menu li { width: 100%; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
   .nav-menu li:last-child { border-bottom: none; }
-  .nav-menu a { display: block; padding: 16px 20px; font-size: 0.95rem !important; color: var(--text) !important; }
-  .nav-menu a::after { display: none; }
-  .nav-menu a:active { background: rgba(0, 0, 0, 0.04); }
-  .nav-user { display: block; padding: 16px 20px; font-size: 0.95rem; }
+  .nav-menu a { display: block; padding: 14px 22px; font-size: 1rem; color: var(--text); text-decoration: none; }
+  .nav-menu a:hover { background: rgba(0, 0, 0, 0.03); }
+  .nav-user { display: block; padding: 14px 22px; font-size: 1rem; }
 
   .search-bar { padding: 10px 16px 0; max-width: none; }
   .search-bar form { padding: 4px 4px 4px 12px; }

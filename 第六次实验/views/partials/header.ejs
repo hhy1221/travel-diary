@@ -63,18 +63,38 @@
       var btn = document.getElementById('hamburger-btn');
       var menu = document.getElementById('nav-menu');
       if (!btn || !menu) return;
-      menu.style.display = 'none';
+
+      function isMobile() {
+        return window.getComputedStyle(btn).display !== 'none';
+      }
+
+      if (isMobile()) {
+        menu.style.display = 'none';
+      }
+
       btn.addEventListener('click', function(e) {
+        if (!isMobile()) return;
         e.stopPropagation();
         var isOpen = menu.style.display === 'flex';
         menu.style.display = isOpen ? 'none' : 'flex';
         if (isOpen) btn.classList.remove('active');
         else btn.classList.add('active');
       });
+
       document.addEventListener('click', function(e) {
-        if (menu.style.display === 'flex' && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+        if (!isMobile()) return;
+        if (menu.style.display === 'flex' && !menu.contains(e.target) && !btn.contains(e.target)) {
           menu.style.display = 'none';
           btn.classList.remove('active');
+        }
+      });
+
+      window.addEventListener('resize', function() {
+        if (!isMobile()) {
+          menu.style.display = '';
+          btn.classList.remove('active');
+        } else if (menu.style.display === '' || menu.style.display === 'flex') {
+          menu.style.display = 'none';
         }
       });
     })();
