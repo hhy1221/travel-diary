@@ -1,7 +1,7 @@
 {
   "name": "travel-diary",
   "version": "1.0.0",
-  "description": "旅途笔记 - 旅游日记分享网站",
+  "description": "旅途笔记 - 基于 Node.js + Express + MongoDB 的全功能旅游社交分享平台",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
