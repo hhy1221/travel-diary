@@ -1,7 +1,15 @@
 <%- include('partials/header') %>
 
 <!-- 全屏 Hero 横幅：沉浸式大图背景 + 玻璃拟态半透明遮罩 -->
-<div class="hero" style="background-image: url('/images/hero11.jpg');">
+<div class="hero-slideshow">
+  <div class="hero-slide active" style="background-image: url('/images/hero11.jpg');"></div>
+  <div class="hero-slide" style="background-image: url('/images/hero121.jpg');"></div>
+  <div class="hero-slide" style="background-image: url('/images/hero211.jpg');"></div>
+  <div class="hero-slide" style="background-image: url('/images/hero111.jpg');"></div>
+  <div class="hero-slide" style="background-image: url('/images/hero1%20(2).jpg');"></div>
+  <div class="hero-slide" style="background-image: url('/images/hero.jpg');"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-bottom-fade"></div>
   <div class="hero-content">
     <div class="hero-badge">✦ TRAVEL DIARY ✦</div>
     <h1>探索世界，<br>记录<span class="gold">旅程</span></h1>
@@ -15,6 +23,14 @@
         <a href="/features" class="btn btn-outline">探索功能</a>
       <% } %>
     </div>
+  </div>
+  <div class="slide-dots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
   </div>
 </div>
 
@@ -138,5 +154,23 @@
   <% } %>
 </div>
 <% } %>
+
+<script>
+  var slides = document.querySelectorAll('.hero-slide');
+  var dots = document.querySelectorAll('.dot');
+  var current = 0;
+  var total = slides.length;
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+  setInterval(function() { showSlide(current + 1); }, 5000);
+  dots.forEach(function(dot, i) {
+    dot.addEventListener('click', function() { showSlide(i); });
+  });
+</script>
 
 <%- include('partials/footer') %>
