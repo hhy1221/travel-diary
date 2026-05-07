@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
+// User 模型：用户名/邮箱/密码/bio/头像/收藏
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
