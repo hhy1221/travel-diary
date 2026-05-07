@@ -627,7 +627,7 @@ img { max-width: 100%; height: auto; display: block; }
 .travel-card:nth-child(8) { animation-delay: 0.4s; }
 
 /* ===== 滚动渐显 ===== */
-.reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; } /* IntersectionObserver 滚动渐显 */
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
 /* 响应式布局：1024px平板 / 768px手机横屏 / 480px手机竖屏 三断点方案 */
