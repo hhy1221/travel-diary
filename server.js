@@ -740,7 +740,14 @@ app.get('/stats', async (req, res) => {
     });
   } catch (err) {
     console.error('Stats 查询失败:', err);
-    next(err);
+    res.status(500).render('error', {
+      title: '服务器错误 - 旅途笔记',
+      status: 500,
+      message: '统计数据加载失败',
+      detail: '请稍后再试。如问题持续存在，请联系管理员。',
+      backLink: '/',
+      backLabel: '返回首页'
+    });
   }
 });
 
@@ -899,6 +906,19 @@ app.post('/admin/upload', requireAdmin, (req, res) => {
   });
 });
 
+// ========== 健康检查端点（Railway / 监控系统探活用） ==========
+app.get('/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  const healthy = dbState === 1;
+  res.status(healthy ? 200 : 503).json({
+    status: healthy ? 'ok' : 'degraded',
+    uptime: process.uptime(),
+    db: dbStates[dbState] || 'unknown',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // ========== 404 处理 — 所有未匹配路由 ==========
 app.use((req, res) => {
   res.status(404).render('error', {
@@ -923,6 +943,26 @@ app.use((err, req, res, next) => {
     backLink: '/',
     backLabel: '返回首页'
   });
+});
+
+// ========== 全局未捕获异常兜底（防止进程崩溃） ==========
+process.on('uncaughtException', (err) => {
+  console.error('未捕获异常:', err.message);
+  console.error(err.stack);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('未处理的 Promise 拒绝:', reason);
+});
+
+// MongoDB 连接事件监听（断连自动重连）
+mongoose.connection.on('disconnected', () => {
+  console.warn('MongoDB 连接断开，正在尝试重连...');
+});
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB 已重新连接');
+});
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB 连接错误:', err.message);
 });
 
 // ========== 启动服务器 ==========
