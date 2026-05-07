@@ -685,6 +685,7 @@ img { max-width: 100%; height: auto; display: block; }
   .hamburger { display: flex; }
 
   .nav-menu {
+    display: none;
     position: fixed;
     top: 60px;
     right: 0;
@@ -701,6 +702,7 @@ img { max-width: 100%; height: auto; display: block; }
     z-index: 999;
     padding: 6px 0;
   }
+  .nav-menu.open { display: flex; }
   .nav-menu li { width: 100%; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
   .nav-menu li:last-child { border-bottom: none; }
   .nav-menu a { display: block; padding: 14px 22px; font-size: 1rem; color: var(--text); text-decoration: none; }
