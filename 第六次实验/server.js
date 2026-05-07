@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 
 const app = express();
 // 引入用户模型
@@ -89,21 +90,23 @@ app.use(async (req, res, next) => {
 
 // ========== 路由：首页 ==========
 app.get('/', async (req, res) => {
-  const page = parseInt(req.query.page) || 1;   // 当前页，默认第1页
-  const limit = 4;   // 每页显示4篇（你可根据需要调整）
-  
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 12;
+
   try {
     const total = await Travel.countDocuments();
+    const totalPages = Math.ceil(total / perPage);
+    const safePage = Math.max(1, Math.min(page, totalPages || 1));
     const travels = await Travel.find()
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
-    
+      .skip((safePage - 1) * perPage)
+      .limit(perPage);
+
     res.render('index', { 
       title: '旅途笔记 - 首页',
       travels: travels,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
+      currentPage: safePage,
+      totalPages: totalPages,
       query: ''
     });
     
@@ -117,7 +120,7 @@ app.get('/', async (req, res) => {
 app.get('/search', async (req, res) => {
   const query = req.query.q || '';
   const page = parseInt(req.query.page) || 1;
-  const limit = 4;
+  const perPage = parseInt(req.query.perPage) || 12;
   
   try {
     const filter = {
@@ -127,16 +130,18 @@ app.get('/search', async (req, res) => {
       ]
     };
     const total = await Travel.countDocuments(filter);
+    const totalPages = Math.ceil(total / perPage);
+    const safePage = Math.max(1, Math.min(page, totalPages || 1));
     const travels = await Travel.find(filter)
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+      .skip((safePage - 1) * perPage)
+      .limit(perPage);
     
     res.render('index', { 
       title: '搜索: ' + query + ' - 旅途笔记',
       travels: travels,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
+      currentPage: safePage,
+      totalPages: totalPages,
       query: query
     });
   } catch (err) {
@@ -145,22 +150,6 @@ app.get('/search', async (req, res) => {
   }
 });
 
-// ========== API：加载更多游记（无限滚动） ==========
-app.get('/api/travels', async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = 4;  // 每页数量，与首页一致
-  try {
-    const travels = await Travel.find()
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();  // 返回普通 JS 对象，提高性能
-    res.json(travels);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: '加载失败' });
-  }
-});
 // ========== 注册页面 ==========
 app.get('/register', (req, res) => {
   if (req.session.user) return res.redirect('/');
@@ -637,6 +626,108 @@ app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/');
 });
+
+// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
+app.get('/__seed__', async (req, res) => {
+  try {
+    const existingTravels = await Travel.countDocuments({});
+    if (existingTravels > 0) {
+      const existingUsers = await User.countDocuments({ email: /@travel\.com$/ });
+      return res.send('<h1>数据已存在，跳过</h1><p>共 ' + existingUsers + ' 个用户 / ' + existingTravels + ' 篇游记</p>');
+    }
+    await User.deleteMany({ email: /@travel\.com$/ });
+
+    const seedUsers = [
+      { username: '旅行者小赵', email: 'xiaozhao@travel.com', password: '123456', bio: '一个热爱旅行的摄影爱好者，走遍千山万水。' },
+      { username: '山川行者', email: 'shanchuan@travel.com', password: '123456', bio: '徒步十年，最美的风景始终在路上。' },
+      { username: '吃货在路上', email: 'chihuo@travel.com', password: '123456', bio: '旅行即美食，每座城都有独特味道。' },
+      { username: '小猪穷游日记', email: 'qiongyou@travel.com', password: '123456', bio: '学生党穷游攻略，花最少看最美。' },
+      { username: '快门日记', email: 'kuaimen@travel.com', password: '123456', bio: '摄影师，用镜头记录每一段旅程。' },
+      { username: '独自去远方', email: 'yuanfang@travel.com', password: '123456', bio: '一个人旅行，在陌生城市找自己。' },
+      { username: '带着爸妈看世界', email: 'bama@travel.com', password: '123456', bio: '趁父母还走得动，多看看世界。' },
+      { username: 'citywalk达人', email: 'citywalk@travel.com', password: '123456', bio: '用脚步丈量城市的每个角落。' },
+    ];
+    const created = [];
+    for (const u of seedUsers) {
+      const hashed = await bcrypt.hash(u.password, 10);
+      const user = await User.create({ ...u, password: hashed });
+      created.push(user);
+    }
+
+    const seed = [
+      { title:'大理三日慢游记——在苍山洱海之间', destination:'大理', tags:['云南','洱海'], views:856, content:'<h2>Day 1：古城漫步</h2><p>清晨抵达大理古城，阳光洒在青石板路。住在白族民宿，推开窗就是苍山。老板递上一杯普洱——来大理，就是来慢下来的。</p><h2>Day 2：环洱海骑行</h2><p>租了电动车沿洱海环湖，经喜洲古镇吃喜洲粑粑，外酥里嫩配玫瑰酱。下午在双廊海边咖啡馆看苍山洱海，时间仿佛静止。</p><h2>Day 3：苍山索道</h2><p>坐索道上到3900米，俯瞰整个大理古城和洱海。山顶空气清冷纯净，让人来了就不想走。</p>'},
+      { title:'东京自由行——从涩谷到浅草', destination:'东京', tags:['日本','美食'], views:720, content:'<h2>涩谷十字路口</h2><p>站在星巴克二楼俯瞰世界最繁忙路口，感受城市脉搏。涩谷109逛到腿软。</p><h2>浅草寺</h2><p>穿过雷门大红灯笼，仲见世商店街的人形烧和抹茶冰淇淋，满满的江户风情。</p><h2>秋叶原</h2><p>动漫天堂！手办、扭蛋、女仆咖啡厅，买了一堆海贼王手办。</p><h2>新宿夜景</h2><p>都厅展望台45楼免费俯瞰东京夜景，东京塔和晴空塔遥遥相望。</p>'},
+      { title:'成都美食之旅——三天吃遍锦官城', destination:'成都', tags:['四川','火锅'], views:638, content:'<h2>Day 1：火锅之夜</h2><p>到成都第一顿必须火锅！玉林路老店红油翻滚，毛肚七上八下，嫩牛肉入口即化，辣到流汗也停不下。冰粉红糖糍粑收尾。</p><h2>Day 2：大熊猫基地</h2><p>圆滚滚的熊猫啃竹子，心都要化了。下午锦里宽窄巷子，三大炮担担面一路吃。</p><h2>Day 3：人民公园</h2><p>鹤鸣茶社喝茶搓麻将，安逸得很。临走又吃碗肥肠粉。</p>'},
+      { title:'杭州西湖边的24小时', destination:'杭州', tags:['西湖','江南'], views:542, content:'<h2>出发</h2><p>高铁一小时抵杭，住龙井村民宿，推开窗是茶园。明前龙井清香扑鼻。</p><h2>苏堤晨跑</h2><p>六点沿苏堤跑步，晨雾中西湖三潭印月若隐若现，只属于早起的人。</p><h2>灵隐寺</h2><p>香火鼎盛，大雄宝殿许愿，飞来峰看石刻。素斋出乎意料好吃。</p><h2>湖滨</h2><p>夕阳把雷峰塔染成金色，来杭州是对的。</p>'},
+      { title:'三亚海岛日记——阳光沙滩椰子鸡', destination:'三亚', tags:['海南','潜水'], views:890, content:'<h2>蜈支洲岛</h2><p>海水清澈见底，珊瑚和热带鱼就在身边。潜到5米深看海胆和彩色小鱼，一生难忘。</p><h2>亚龙湾</h2><p>沙滩白如面粉，躺沙滩椅喝椰子看海——度假正确打开方式。傍晚捡了几个贝壳。</p><h2>第一市场</h2><p>自买海鲜现做，人均150吃撑。椰子鸡椰汁煮出的鸡肉嫩滑香甜。</p>'},
+      { title:'一个人的重庆——山城步道与火锅', destination:'重庆', tags:['山城','洪崖洞'], views:675, content:'<h2>魔幻轻轨</h2><p>2号线穿楼而过，李子坝已成打卡圣地。俯瞰嘉陵江如科幻大片。</p><h2>十八梯</h2><p>从上半城到下半城，楼梯多到怀疑人生。但老街道和江景值每一步。</p><h2>洪崖洞夜景</h2><p>金碧辉煌似宫崎骏动画，千厮门大桥上看全景，美到想哭。</p><h2>防空洞火锅</h2><p>九宫格红汤锅，毛肚鸭肠老肉片，辣到嘴麻也停不下。</p>'},
+      { title:'西北大环线——从青海湖到敦煌', destination:'青海', tags:['青海湖','自驾'], views:920, content:'<h2>青海湖</h2><p>七月油菜花盛开，金色花海湛蓝湖水。天很低云很白，一切纯净得不像话。</p><h2>茶卡盐湖</h2><p>天空之镜！站盐湖拍倒影，怎么拍都好看。晚上赶到敦煌看沙漠日落。</p><h2>莫高窟</h2><p>千年壁画，飞天佛像，古人智慧让人震撼。文创飞天书签把敦煌带回家。</p><h2>鸣沙山月牙泉</h2><p>骑骆驼爬沙丘，千年不涸的清泉本身是奇迹。每一帧都值得铭记。</p>'},
+      { title:'西藏朝圣——布达拉宫与大昭寺', destination:'拉萨', tags:['西藏','高原'], views:1024, content:'<h2>抵达拉萨</h2><p>飞抵感受高原清凉，八廓街慢走适应。甜茶藏面牦牛肉包子朴实难忘。</p><h2>布达拉宫</h2><p>红山上的宫殿层层叠叠庄严神圣。历代灵塔镶满宝石黄金。俯瞰全城离天很近。</p><h2>大昭寺</h2><p>磕长头的信徒额头磨茧眼神虔诚，信仰力量让人震撼。</p><h2>纳木错</h2><p>海拔4700米圣湖，湖水蓝如宝石，雪山倒映美得不真实。许愿再来。</p>'},
+      { title:'厦门鼓浪屿——文艺青年的小确幸', destination:'厦门', tags:['鼓浪屿','文艺'], views:498, content:'<h2>鼓浪屿</h2><p>轮渡上岛，红砖老别墅遍布。无车只能步行，手绘地图穿小巷处处惊喜。日光岩俯瞰红瓦绿树碧海蓝天。</p><h2>张三疯奶茶</h2><p>招牌奶茶配一只懒猫，消磨一下午。盖章本一路打卡赵小姐的店、潘小莲酸奶。</p><h2>环岛路</h2><p>骑自行车海风吹过，右手大海左手绿树。曾厝垵沙茶面海蛎煎烧仙草完美收尾。</p>'},
+      { title:'张家界仙境——阿凡达取景地', destination:'张家界', tags:['阿凡达','天门山'], views:780, content:'<h2>森林公园</h2><p>石英砂岩峰林拔地而起高耸入云，云雾缭绕如仙境。哈利路亚山是《阿凡达》悬浮山原型。</p><h2>金鞭溪</h2><p>徒步5公里，奇峰倒映溪中。遇到不怕人的野猴子，天然大氧吧。</p><h2>天门山</h2><p>世界最长索道7.5公里30分钟。玻璃栈道脚下万丈深渊心怦怦跳。999级天梯膝盖抖但不虚此行。</p>'},
+    ];
+
+    const travels = [];
+    for (let i = 0; i < seed.length; i++) {
+      const t = seed[i];
+      const author = created[i % created.length];
+      const travel = await Travel.create({
+        ...t, author: author._id, authorName: author.username,
+        createdAt: new Date(Date.now() - (seed.length - i) * 86400000),
+        gallery: [], likes: [],
+      });
+      travels.push(travel);
+    }
+
+    function r(n) { return Math.floor(Math.random() * n); }
+
+    for (const t of travels) {
+      const likers = [];
+      for (let i = 0; i < r(created.length - 1) + 3; i++) {
+        const u = created[r(created.length)];
+        if (!likers.find(l => l.equals(u._id)) && !u._id.equals(t.author)) likers.push(u._id);
+      }
+      t.likes = likers;
+      await t.save();
+      for (const lid of likers) {
+        await Notification.create({
+          recipient: t.author, sender: lid, type: 'like', travel: t._id,
+          read: Math.random() > 0.5, createdAt: new Date(Date.now() - r(30) * 86400000),
+        });
+      }
+    }
+
+    const commentTexts = ['太美了！已经在订机票了！','写得真好，又回忆起那段时光。','收藏了！下次按你的路线走。','攻略好详细谢谢分享！','好羡慕希望我也能去。','看到美食那部分饿了哈哈！','感觉身临其境！','请问住宿大概多少钱？','这才是旅行的意义。','每次看都有新收获'];
+    let cc = 0;
+    for (const t of travels) {
+      for (let i = 0; i < r(3) + 2; i++) {
+        const commenter = created[r(created.length)];
+        if (commenter._id.equals(t.author)) continue;
+        const c = await Comment.create({
+          travel: t._id, author: commenter._id,
+          content: commentTexts[r(commentTexts.length)],
+          likes: [created[r(created.length)]._id],
+          createdAt: new Date(Date.now() - r(20) * 86400000),
+        });
+        cc++;
+        await Notification.create({
+          recipient: t.author, sender: commenter._id, type: 'comment', travel: t._id,
+          read: Math.random() > 0.5, createdAt: c.createdAt,
+        });
+      }
+    }
+
+    for (const u of created) {
+      u.favorites = travels.filter(() => Math.random() > 0.3).map(t => t._id).slice(0, 5);
+      await u.save();
+    }
+
+    res.send('<h1>✅ 种子数据生成完毕</h1><p>用户：' + created.length + ' / 游记：' + travels.length + ' / 评论：' + cc + '</p><p>请关闭此页面</p>');
+  } catch (err) {
+    res.status(500).send('<h1>❌ 失败</h1><pre>' + err.message + '</pre>');
+  }
+});
+// AI 生成结束
 
 // ========== 启动服务器 ==========
 // 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成

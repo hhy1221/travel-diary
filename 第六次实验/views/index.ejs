@@ -3,169 +3,140 @@
 <!-- ===== 横幅轮播区 ===== -->
 <div class="hero" style="background-image: url('/images/hero11.jpg');">
   <div class="hero-content">
-    <h1>探索世界，记录旅程</h1>
+    <div class="hero-badge">✦ TRAVEL DIARY ✦</div>
+    <h1>探索世界，<br>记录<span class="gold">旅程</span></h1>
     <p>发现下一站的灵感，分享你的旅行故事</p>
-    <% if (!currentUser) { %>
-      <a href="/register" class="btn btn-primary" style="margin-right: 12px;">立即注册</a>
-      <a href="/login" class="btn btn-outline">登录</a>
-    <% } else { %>
-      <a href="/create" class="btn btn-primary">写一篇游记</a>
-    <% } %>
+    <div class="btn-group">
+      <% if (!currentUser) { %>
+        <a href="/register" class="btn btn-primary">✨ 立即注册</a>
+        <a href="/login" class="btn btn-outline">已有账号？登录</a>
+      <% } else { %>
+        <a href="/create" class="btn btn-primary">✏️ 写一篇游记</a>
+        <a href="/features" class="btn btn-outline">探索功能</a>
+      <% } %>
+    </div>
   </div>
 </div>
 
 <!-- ===== 热门目的地 ===== -->
-<h2 class="section-title">热门目的地</h2>
+<div class="section-header">
+  <div class="accent-line"></div>
+  <h2 class="section-title">热门目的地</h2>
+  <span class="section-subtitle">精选旅行灵感</span>
+</div>
 <div class="dest-grid">
   <a href="/search?q=大理" class="dest-card">
     <img src="/images/dali.jpg" alt="大理">
-    <div class="info"><h3>大理</h3><p style="color:#636e72;">风花雪月</p></div>
+    <div class="info"><h3>大理</h3><p>风花雪月</p></div>
   </a>
   <a href="/search?q=东京" class="dest-card">
     <img src="/images/tokyo.jpg" alt="东京">
-    <div class="info"><h3>东京</h3><p style="color:#636e72;">霓虹都市</p></div>
+    <div class="info"><h3>东京</h3><p>霓虹都市</p></div>
   </a>
   <a href="/search?q=成都" class="dest-card">
     <img src="/images/chengdu.jpg" alt="成都">
-    <div class="info"><h3>成都</h3><p style="color:#636e72;">美食天堂</p></div>
+    <div class="info"><h3>成都</h3><p>美食天堂</p></div>
   </a>
   <a href="/search?q=三亚" class="dest-card">
     <img src="/images/sanya.jpg" alt="三亚">
-    <div class="info"><h3>三亚</h3><p style="color:#636e72;">冬日暖阳</p></div>
+    <div class="info"><h3>三亚</h3><p>冬日暖阳</p></div>
   </a>
 </div>
 
 <!-- ===== 热门游记 ===== -->
 <% if (typeof popularTravels !== 'undefined' && popularTravels.length > 0) { %>
-  <h2 class="section-title">热门游记</h2>
+  <div class="section-header">
+    <div class="accent-line"></div>
+    <h2 class="section-title">热门游记</h2>
+    <span class="section-subtitle">大家最爱的旅行故事</span>
+  </div>
   <div class="travel-grid">
     <% popularTravels.forEach(function(travel) { %>
       <div class="travel-card">
-        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <a href="/travel/<%= travel._id %>">
+          <div class="img-wrapper">
+            <img src="<%= travel.image %>" alt="<%= travel.title %>">
+            <span class="category-tag"><%= travel.category %></span>
+          </div>
+        </a>
         <div class="card-body">
-          <span class="tag"><%= travel.category %></span>
           <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
-          <p style="color:#636e72; font-size:0.9rem;">目的地：<%= travel.destination %> | 👁 <%= travel.views %> | ❤ <%= travel.likes.length %></p>
+          <div class="card-meta">
+            <span>📍 <%= travel.destination %></span>
+            <span>👁 <%= travel.views %></span>
+            <span>❤ <%= travel.likes.length %></span>
+          </div>
         </div>
       </div>
     <% }); %>
   </div>
 <% } %>
 
-<!-- ===== 最新游记（分页） ===== -->
-<h2 class="section-title">最新游记</h2>
+<!-- ===== 最新游记 ===== -->
+<div class="section-header">
+  <div class="accent-line"></div>
+  <h2 class="section-title">最新游记</h2>
+  <span class="section-subtitle">刚刚发布的新鲜内容</span>
+</div>
 <% if (travels.length === 0) { %>
-  <div style="text-align:center; padding: 50px; color: #636e72;">
-    <p style="font-size:1.2rem;">还没有人分享游记，成为第一个探索者吧！</p>
+  <div style="text-align:center; padding: 60px; color: var(--text-muted);">
+    <p style="font-size:1.2rem;">🌍 还没有人分享游记，成为第一个探索者吧！</p>
   </div>
 <% } else { %>
   <div class="travel-grid">
     <% travels.forEach(function(travel) { %>
       <div class="travel-card">
-        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <a href="/travel/<%= travel._id %>">
+          <div class="img-wrapper">
+            <img src="<%= travel.image %>" alt="<%= travel.title %>">
+            <span class="category-tag"><%= travel.category %></span>
+          </div>
+        </a>
         <div class="card-body">
-          <span class="tag"><%= travel.category %></span>
           <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
-          <p style="color:#636e72; font-size:0.9rem;">
-            目的地：<%= travel.destination %> | 作者：<a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a>
-          </p>
-          <p style="color:#636e72; font-size:0.85rem; margin-top:4px;">
-            👁 <%= travel.views %> | ❤ <%= travel.likes.length %> | <%= travel.createdAt.toLocaleDateString('zh-CN') %>
-          </p>
+          <div class="card-meta">
+            <span>📍 <%= travel.destination %></span>
+            <span>👁 <%= travel.views %></span>
+            <span>❤ <%= travel.likes.length %></span>
+          </div>
+          <div class="card-footer">
+            <span class="author">
+              <img src="<%= travel.author && travel.author.avatar ? travel.author.avatar : '/images/default-avatar.png' %>" class="author-avatar" alt="头像">
+              <a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a>
+            </span>
+            <span><%= travel.createdAt.toLocaleDateString('zh-CN') %></span>
+          </div>
         </div>
       </div>
     <% }); %>
   </div>
 <% } %>
 
-<!-- 无限滚动加载指示器 -->
-<div id="load-more-sentinel" style="text-align: center; padding: 20px; display: none;">
-  <span id="loading-text" style="color: var(--light);">正在加载更多游记...</span>
+<!-- ===== 分页导航 ===== -->
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+<div class="pagination">
+  <% if (currentPage > 1) { %>
+    <a href="?page=1<%= query ? '&q=' + encodeURIComponent(query) : '' %>">&laquo;</a>
+    <a href="?page=<%= currentPage - 1 %><%= query ? '&q=' + encodeURIComponent(query) : '' %>">‹</a>
+  <% } %>
+  <%
+    var start = Math.max(1, currentPage - 2);
+    var end = Math.min(totalPages, currentPage + 2);
+    if (start > 1) { %><span class="ellipsis">...</span><% }
+    for (var i = start; i <= end; i++) {
+      if (i === currentPage) { %>
+        <span class="current"><%= i %></span>
+      <% } else { %>
+        <a href="?page=<%= i %><%= query ? '&q=' + encodeURIComponent(query) : '' %>"><%= i %></a>
+      <% }
+    }
+    if (end < totalPages) { %><span class="ellipsis">...</span><% }
+  %>
+  <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %><%= query ? '&q=' + encodeURIComponent(query) : '' %>">›</a>
+    <a href="?page=<%= totalPages %><%= query ? '&q=' + encodeURIComponent(query) : '' %>">&raquo;</a>
+  <% } %>
 </div>
-
-<script>
-  (function() {
-    var currentPage = 1;
-    var totalPages = <%= typeof totalPages !== 'undefined' ? totalPages : 1 %>;
-    var isLoading = false;
-    var sentinel = document.getElementById('load-more-sentinel');
-    var loadingText = document.getElementById('loading-text');
-
-    // 如果只有一页，隐藏加载指示器
-    if (currentPage >= totalPages) {
-      sentinel.style.display = 'none';
-      return;
-    }
-
-    function loadNextPage() {
-      if (isLoading) return;
-      if (currentPage >= totalPages) {
-        sentinel.innerHTML = '<span style="color: var(--light);">—— 已加载全部游记 ——</span>';
-        sentinel.style.display = 'block';
-        return;
-      }
-      isLoading = true;
-      sentinel.style.display = 'block';
-      loadingText.textContent = '正在加载更多游记...';
-
-      fetch('/api/travels?page=' + (currentPage + 1))
-        .then(res => res.json())
-        .then(data => {
-          if (!data || data.length === 0) {
-            sentinel.innerHTML = '<span style="color: var(--light);">—— 已加载全部游记 ——</span>';
-            return;
-          }
-          // 容器：找到 .travel-grid 元素（最新游记列表）
-          var grid = document.querySelector('.travel-grid');
-          if (!grid) {
-            grid = document.createElement('div');
-            grid.className = 'travel-grid';
-            // 插入到 main-content 最后面，第二个 .travel-grid 之后可能还有其他内容，谨慎插入
-            var main = document.querySelector('.main-content');
-            if (main) main.appendChild(grid);
-          }
-          data.forEach(function(travel) {
-            var card = document.createElement('div');
-            card.className = 'travel-card';
-            card.innerHTML = `
-              <img src="${travel.image}" alt="${travel.title}">
-              <div class="card-body">
-                <span class="tag">${travel.category}</span>
-                <h3><a href="/travel/${travel._id}">${travel.title}</a></h3>
-                <p style="color:var(--light); font-size:0.9rem;">目的地：${travel.destination} | 作者：${travel.authorName}</p>
-                <p style="color:var(--light); font-size:0.85rem; margin-top:4px;">👁 ${travel.views || 0} | ❤ ${travel.likes ? travel.likes.length : 0} | ${new Date(travel.createdAt).toLocaleDateString('zh-CN')}</p>
-              </div>
-            `;
-            grid.appendChild(card);
-          });
-          currentPage++;
-          isLoading = false;
-          if (currentPage >= totalPages) {
-            sentinel.innerHTML = '<span style="color: var(--light);">—— 已加载全部游记 ——</span>';
-          } else {
-            sentinel.style.display = 'none';  // 隐藏指示器，等待下一次触底
-          }
-        })
-        .catch(function() {
-          loadingText.textContent = '加载失败，请稍后再试';
-          isLoading = false;
-        });
-    }
-
-    // 使用 IntersectionObserver 监听 sentinel 是否进入可视区域
-    var observer = new IntersectionObserver(function(entries) {
-      if (entries[0].isIntersecting) {
-        loadNextPage();
-      }
-    }, { rootMargin: '200px' }); // 提前200px触发，体验更流畅
-
-    observer.observe(sentinel);
-
-    // 第一次检查：如果 sentinel 已经在可视区域（例如页面内容很少时），主动加载
-    if (sentinel.getBoundingClientRect().top < window.innerHeight + 200) {
-      loadNextPage();
-    }
-  })();
-</script>
+<% } %>
 
 <%- include('partials/footer') %>
