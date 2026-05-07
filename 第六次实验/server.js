@@ -15,6 +15,7 @@ const User = require('./models/User');
 const Travel = require('./models/Travel');
 const Comment = require('./models/Comment');
 const Notification = require('./models/Notification');
+const Setting = require('./models/Setting');
 
 // ========== 连接 MongoDB ==========
 // 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
@@ -24,8 +25,10 @@ const mongoOptions = process.env.MONGODB_URI
   : { auth: { username: 'huanghanyang', password: 'S20061221hhy' }, authSource: 'admin' };
 
 // Railway 云部署：MONGODB_URI 环境变量 + PORT 自动注入
-mongoose.connect(mongoURI, mongoOptions).then(() => {
+mongoose.connect(mongoURI, mongoOptions).then(async () => {
   console.log('MongoDB 连接成功');
+  const existing = await Setting.findOne();
+  if (!existing) await Setting.create({ heroMode: 'carousel', heroImages: ['hero11.jpg','hero121.jpg','hero211.jpg','hero111.jpg','hero1 (2).jpg','hero.jpg'], heroInterval: 5000, heroStaticImage: 'hero11.jpg' });
 }).catch(err => {
   console.log('MongoDB 连接失败：', err);
 });
@@ -106,12 +109,15 @@ app.get('/', async (req, res) => {
       .skip((safePage - 1) * perPage)
       .limit(perPage);
 
+    const hero = await Setting.findOne();
+
     res.render('index', { 
       title: '旅途笔记 - 首页',
       travels: travels,
       currentPage: safePage,
       totalPages: totalPages,
-      query: ''
+      query: '',
+      hero: hero
     });
     
   } catch (err) {
@@ -191,7 +197,7 @@ app.post('/register', async (req, res) => {
     await user.save();
     
     // 注册成功后直接登录
-    req.session.user = { id: user._id, username: user.username };
+    req.session.user = { id: user._id, username: user.username, isAdmin: user.isAdmin };
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -233,7 +239,7 @@ app.post('/login', async (req, res) => {
     }
     
     // 登录成功
-    req.session.user = { id: user._id, username: user.username };
+    req.session.user = { id: user._id, username: user.username, isAdmin: user.isAdmin };
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -735,6 +741,53 @@ app.get('/__seed__', async (req, res) => {
   }
 });
 // AI 生成结束
+
+// ========== 管理员鉴权中间件 ==========
+function requireAdmin(req, res, next) {
+  if (req.session.user && req.session.user.isAdmin) return next();
+  res.status(403).send('无权访问：需要管理员权限。请先 <a href="/login">登录</a> 管理员账号。');
+}
+
+// ========== 赋能管理员 ==========
+app.get('/__makeadmin__', async (req, res) => {
+  if (!req.session.user) return res.send('请先登录');
+  await User.findByIdAndUpdate(req.session.user.id, { isAdmin: true });
+  req.session.user.isAdmin = true;
+  res.send('已设为管理员！<a href="/admin">进入后台</a>');
+});
+
+// ========== 管理员后台 ==========
+app.get('/admin', requireAdmin, async (req, res) => {
+  const setting = (await Setting.findOne()) || {};
+  const fs = require('fs');
+  const imagesDir = path.join(__dirname, 'public', 'images');
+  const allImages = fs.readdirSync(imagesDir).filter(f =>
+    /\.(jpg|jpeg|png|gif|webp)$/i.test(f)
+  ).filter(f => f.toLowerCase().startsWith('hero'));
+  res.render('admin', { setting, allImages, currentUser: req.session.user });
+});
+
+app.post('/admin/settings', requireAdmin, async (req, res) => {
+  const { heroMode, heroInterval, heroStaticImage } = req.body;
+  let heroImages = req.body.heroImages;
+  if (typeof heroImages === 'string') heroImages = [heroImages];
+  if (!Array.isArray(heroImages)) heroImages = [];
+  let setting = await Setting.findOne();
+  if (!setting) setting = new Setting();
+  setting.heroMode = heroMode || 'carousel';
+  setting.heroImages = heroImages;
+  setting.heroInterval = parseInt(heroInterval) || 5000;
+  setting.heroStaticImage = heroStaticImage || '';
+  await setting.save();
+  res.redirect('/admin?saved=1');
+});
+
+app.post('/admin/upload', requireAdmin, (req, res) => {
+  cpUpload(req, res, async (err) => {
+    if (err) return res.send('上传失败: ' + err.message);
+    res.redirect('/admin?uploaded=1');
+  });
+});
 
 // ========== 启动服务器 ==========
 // 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成

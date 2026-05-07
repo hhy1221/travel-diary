@@ -36,6 +36,9 @@
 </li>
           <li><a href="/my">我的</a></li>
           <li><a href="/settings">设置</a></li>
+          <% if (currentUser.isAdmin) { %>
+            <li><a href="/admin" style="color: var(--gold-light);">⚙ 后台</a></li>
+          <% } %>
           <li><a href="/logout">退出</a></li>
           <li class="nav-user"><%= currentUser.username %></li>
         <% } else { %>
