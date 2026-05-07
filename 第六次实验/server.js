@@ -9,7 +9,8 @@ const multer = require('multer');
 const bcrypt = require('bcrypt');
 
 const app = express();
-// 引入用户模型
+// 导入数据模型
+// User / Travel / Comment / Notification 四个核心模型
 const User = require('./models/User');
 const Travel = require('./models/Travel');
 const Comment = require('./models/Comment');
