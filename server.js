@@ -906,6 +906,20 @@ app.post('/admin/upload', requireAdmin, (req, res) => {
   });
 });
 
+// ========== 数据导出（用于迁移） ==========
+app.get('/__export__', async (req, res) => {
+  try {
+    const users = await User.find().lean();
+    const travels = await Travel.find().lean();
+    const comments = await Comment.find().lean();
+    const notifications = await Notification.find().lean();
+    const settings = await Setting.find().lean();
+    res.json({ exportedAt: new Date().toISOString(), users, travels, comments, notifications, settings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ========== 健康检查端点（Railway / 监控系统探活用） ==========
 app.get('/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
