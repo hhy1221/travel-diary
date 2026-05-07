@@ -8,10 +8,10 @@
   <span class="tag"><%= travel.category %></span>
   <h1 style="margin:12px 0 8px; color:var(--primary);"><%= travel.title %></h1>
   
-  <p style="color:var(--light); margin-bottom:20px;">
-    目的地：<strong><%= travel.destination %></strong> | 
-    作者：<a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a> | 
-    <%= travel.createdAt.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }) %>
+  <p style="color:var(--light); margin-bottom:20px; font-size:15px;">
+      目的地：<strong><%= travel.destination %></strong> | 
+      作者：<a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a> | 
+      发布于 <%= travel.createdAt.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }) %>
   </p>
   
   <!-- 点赞收藏 -->
