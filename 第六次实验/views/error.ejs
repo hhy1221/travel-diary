@@ -1,0 +1,10 @@
+<%- include('partials/header') %>
+
+<div style="text-align: center; padding: 80px 20px;">
+  <div style="font-size: 8rem; font-weight: 800; color: var(--accent); line-height: 1; opacity: 0.3;"><%= status %></div>
+  <h1 style="font-family: 'TitleFont','SimSun',serif; font-size: 2rem; color: var(--primary); margin: 10px 0 14px;"><%= message %></h1>
+  <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 32px;"><%= detail %></p>
+  <a href="<%= backLink %>" class="btn btn-primary" style="font-size: 1rem;"><%= backLabel %></a>
+</div>
+
+<%- include('partials/footer') %>

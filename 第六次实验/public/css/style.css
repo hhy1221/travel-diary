@@ -660,6 +660,81 @@ img { max-width: 100%; height: auto; display: block; }
 .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; } /* IntersectionObserver 滚动渐显 */
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
+/* ===== 统计页面 ===== */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 20px 0 32px;
+}
+.stat-box {
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius-lg);
+  padding: 26px 18px;
+  text-align: center;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+.stat-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.stat-num {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.stat-label { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.chart-card { padding: 24px; }
+.chart-title {
+  font-family: 'TitleFont','SimSun',serif;
+  font-size: 1.15rem;
+  color: var(--primary);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* ===== GitHub OAuth 登录按钮 ===== */
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  margin: 22px 0 14px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.oauth-divider::before, .oauth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+}
+.oauth-divider span { padding: 0 12px; }
+.btn-github {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 0;
+  background: #24292e;
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.btn-github:hover { background: #1a1f23; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+
 /* 响应式布局：1024px平板 / 768px手机横屏 / 480px手机竖屏 三断点方案 */
 @media (max-width: 1024px) {
   .navbar { padding: 0 28px; }
@@ -763,6 +838,11 @@ img { max-width: 100%; height: auto; display: block; }
   #editor-container { height: 280px !important; }
   .gallery-thumb { width: 120px !important; height: 96px !important; }
   .gallery-grid { gap: 8px !important; }
+
+  .stats-overview { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .stat-box { padding: 18px 12px; }
+  .stat-num { font-size: 1.8rem; }
+  .charts-grid { grid-template-columns: 1fr; }
 }
 
 /* ========================================== */

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-// User 模型：用户名/邮箱/密码/bio/头像/收藏
+// User 模型：完整用户数据，支持邮箱/密码注册 + GitHub OAuth 第三方登录
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -11,16 +11,17 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
+    sparse: true,
     trim: true,
     lowercase: true
   },
   password: {
     type: String,
-    required: true
+    required: false
   },
-    bio: {
+  bio: {
     type: String,
     default: '',
     maxlength: 200
@@ -28,6 +29,15 @@ const UserSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: '/images/default-avatar.png'
+  },
+  githubId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  githubUsername: {
+    type: String,
+    default: ''
   },
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,

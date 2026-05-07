@@ -1,5 +1,9 @@
-// 引入所需模块
-// Express 框架 + EJS 模板引擎 + Session 会话管理
+// ============================================================
+//  旅途笔记 — Travel Diary
+//  基于 Node.js + Express + MongoDB + Passport 的全功能旅游社交平台
+//  MVC 分层架构：Models(数据) / Views(模板) / Controller(server.js)
+// ============================================================
+
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
@@ -7,10 +11,13 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const GitHubStrategy = require('passport-github2').Strategy;
+const { body, param, query, validationResult } = require('express-validator');
 
 const app = express();
-// 导入数据模型
-// User / Travel / Comment / Notification 四个核心模型
+
+// 数据模型
 const User = require('./models/User');
 const Travel = require('./models/Travel');
 const Comment = require('./models/Comment');
@@ -18,13 +25,11 @@ const Notification = require('./models/Notification');
 const Setting = require('./models/Setting');
 
 // ========== 连接 MongoDB ==========
-// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
 const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/travel';
 const mongoOptions = process.env.MONGODB_URI
   ? {}
   : { auth: { username: 'huanghanyang', password: 'S20061221hhy' }, authSource: 'admin' };
 
-// Railway 云部署：MONGODB_URI 环境变量 + PORT 自动注入
 mongoose.connect(mongoURI, mongoOptions).then(async () => {
   console.log('MongoDB 连接成功');
   const existing = await Setting.findOne();
@@ -32,19 +37,15 @@ mongoose.connect(mongoURI, mongoOptions).then(async () => {
 }).catch(err => {
   console.log('MongoDB 连接失败：', err);
 });
-// AI 生成结束
 
-// 确保上传目录存在：自动创建 public/uploads 文件夹
+// ========== 文件上传设置 ==========
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Multer 文件上传中间件：封面图 + 画廊多图
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
+  destination: function (req, file, cb) { cb(null, uploadsDir); },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
@@ -57,39 +58,63 @@ const cpUpload = upload.fields([
   { name: 'gallery', maxCount: 10 }
 ]);
 
-
-// ========== 中间件配置 ==========
-// 设置模板引擎为 ejs
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// 提供静态文件服务（css、图片、前端 js 等）
-app.use(express.static(path.join(__dirname, 'public')));
-
-// 解析表单提交的数据
-app.use(express.urlencoded({ extended: false }));
-
-// express-session 会话持久化：密钥签名 + 用户信息全局注入
-app.use(session({
-  secret: 'travel-secret-key-2024',   // 密钥，可以随便写
-  resave: false,
-  saveUninitialized: false
+// ========== Passport GitHub OAuth 第三方登录配置 ==========
+passport.use(new GitHubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID || '',
+  clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+  callbackURL: (process.env.RAILWAY_PUBLIC_DOMAIN ? 'https://' + process.env.RAILWAY_PUBLIC_DOMAIN : 'http://localhost:12399') + '/auth/github/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    // 查找是否有已关联 GitHub 的用户
+    let user = await User.findOne({ githubId: profile.id });
+    if (user) return done(null, { id: user._id, username: user.username, isAdmin: user.isAdmin });
+    // 用 GitHub 用户名作为新用户昵称，确保唯一性
+    let username = (profile.username || 'github_user').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_]/g, '_');
+    const existing = await User.findOne({ username });
+    if (existing) username = username + '_' + profile.id.slice(0, 6);
+    user = await User.create({
+      username,
+      githubId: profile.id,
+      githubUsername: profile.username || '',
+      avatar: (profile.photos && profile.photos[0] && profile.photos[0].value) || '/images/default-avatar.png',
+      isAdmin: false
+    });
+    return done(null, { id: user._id, username: user.username, isAdmin: user.isAdmin });
+  } catch (err) {
+    return done(err);
+  }
 }));
 
-// 全局中间件：session 用户注入 + 未读通知计数
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+// ========== Express 中间件配置 ==========
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
+
+app.use(session({
+  secret: 'travel-secret-key-2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7天过期
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 全局中间件：注入当前用户、当前路径、未读通知数
 app.use(async (req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.currentPath = req.path;
   if (req.session.user) {
     try {
       const unreadCount = await Notification.countDocuments({
-        recipient: req.session.user.id,
-        read: false
+        recipient: req.session.user.id, read: false
       });
       res.locals.unreadCount = unreadCount;
-    } catch (err) {
-      res.locals.unreadCount = 0;
-    }
+    } catch (err) { res.locals.unreadCount = 0; }
   } else {
     res.locals.unreadCount = 0;
   }
@@ -171,45 +196,30 @@ app.get('/register', (req, res) => {
   res.render('register', { title: '注册 - 旅途笔记' });
 });
 
-// 处理注册表单
-// 用户注册：表单验证 + bcrypt 哈希 + 自动登录
-app.post('/register', async (req, res) => {
+// 处理注册表单 — 含 express-validator 严格校验
+app.post('/register', [
+  body('username').trim().isLength({ min: 2, max: 20 }).withMessage('用户名需 2-20 个字符'),
+  body('email').trim().isEmail().normalizeEmail().withMessage('请输入有效邮箱'),
+  body('password').isLength({ min: 6 }).withMessage('密码至少 6 位'),
+  body('password2').custom((val, { req }) => val === req.body.password).withMessage('两次密码不一致')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.render('register', { title: '注册 - 旅途笔记', error: errors.array()[0].msg });
+  }
   try {
-    console.log('===== 注册请求开始 =====');
-    console.log('请求体:', req.body);
-
-    const { username, email, password, password2 } = req.body;
-    
-    // 简单校验
-    if (password !== password2) {
-      return res.render('register', { 
-        title: '注册 - 旅途笔记',
-        error: '两次密码输入不一致' 
-      });
-    }
-    
-    // 检查用户名或邮箱是否已存在
+    const { username, email, password } = req.body;
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      return res.render('register', { 
-        title: '注册 - 旅途笔记',
-        error: '用户名或邮箱已被注册' 
-      });
+      return res.render('register', { title: '注册 - 旅途笔记', error: '用户名或邮箱已被注册' });
     }
-    
-    // 创建用户（密码会自动加密）
     const user = new User({ username, email, password });
     await user.save();
-    
-    // 注册成功后直接登录
     req.session.user = { id: user._id, username: user.username, isAdmin: user.isAdmin };
     res.redirect('/');
   } catch (err) {
     console.error(err);
-    res.render('register', { 
-      title: '注册 - 旅途笔记',
-      error: '注册失败，请稍后再试' 
-    });
+    res.render('register', { title: '注册 - 旅途笔记', error: '注册失败，请稍后再试' });
   }
 });
 
@@ -219,50 +229,57 @@ app.get('/login', (req, res) => {
   res.render('login', { title: '登录 - 旅途笔记' });
 });
 
-// 处理登录表单
-// 用户登录：密码验证 + session 创建 + 重定向
-app.post('/login', async (req, res) => {
+// 处理登录表单 — 含后端验证
+app.post('/login', [
+  body('username').trim().notEmpty().withMessage('请输入用户名'),
+  body('password').notEmpty().withMessage('请输入密码')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.render('login', { title: '登录 - 旅途笔记', error: errors.array()[0].msg });
+  }
   try {
     const { username, password } = req.body;
-    
-    // 查找用户
     const user = await User.findOne({ username });
-    if (!user) {
-      return res.render('login', { 
-        title: '登录 - 旅途笔记',
-        error: '用户名或密码错误' 
-      });
+    if (!user || !(await user.comparePassword(password))) {
+      return res.render('login', { title: '登录 - 旅途笔记', error: '用户名或密码错误' });
     }
-    
-    // 验证密码
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.render('login', { 
-        title: '登录 - 旅途笔记',
-        error: '用户名或密码错误' 
-      });
-    }
-    
-    // 登录成功
     req.session.user = { id: user._id, username: user.username, isAdmin: user.isAdmin };
     res.redirect('/');
   } catch (err) {
     console.error(err);
-    res.render('login', { 
-      title: '登录 - 旅途笔记',
-      error: '登录失败，请稍后再试' 
-    });
+    res.render('login', { title: '登录 - 旅途笔记', error: '登录失败，请稍后再试' });
   }
 });
+// ========== GitHub OAuth 第三方登录 ==========
+app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login', failureFlash: false }),
+  (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/');
+  }
+);
+
 // ========== 发布游记页面 ==========
 app.get('/create', (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   res.render('create', { title: '写游记 - 旅途笔记' });
 });
 
-// 处理游记发布（使用 cpUpload 同时接收封面图和多张图片）
-app.post('/create', cpUpload, async (req, res) => {
+// 处理游记发布 — 含文件上传 + 内容校验
+app.post('/create', cpUpload, [
+  body('title').trim().isLength({ min: 2, max: 100 }).withMessage('标题需 2-100 个字符'),
+  body('destination').trim().notEmpty().withMessage('请输入目的地'),
+  body('content').trim().isLength({ min: 10 }).withMessage('正文至少 10 个字符'),
+  body('category').trim().notEmpty().withMessage('请选择分类')
+], async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.render('create', { title: '写游记 - 旅途笔记', error: errors.array()[0].msg });
+  }
   try {
     const { title, destination, content, category } = req.body;
     const travel = new Travel({
@@ -270,25 +287,17 @@ app.post('/create', cpUpload, async (req, res) => {
       author: req.session.user.id,
       authorName: req.session.user.username
     });
-    
-    // 处理封面图（字段名为 image）
     if (req.files['image'] && req.files['image'].length > 0) {
       travel.image = '/uploads/' + req.files['image'][0].filename;
     }
-    
-    // 处理多张图片（字段名为 gallery）
     if (req.files['gallery'] && req.files['gallery'].length > 0) {
       travel.gallery = req.files['gallery'].map(file => '/uploads/' + file.filename);
     }
-    
     await travel.save();
     res.redirect('/');
   } catch (err) {
     console.error(err);
-    res.render('create', { 
-      title: '写游记 - 旅途笔记', 
-      error: '发布失败，请稍后再试' 
-    });
+    res.render('create', { title: '写游记 - 旅途笔记', error: '发布失败，请稍后再试' });
   }
 });
 
@@ -645,20 +654,24 @@ app.post('/settings', upload.single('avatar'), async (req, res) => {
   }
 });
 
-app.post('/settings/password', async (req, res) => {
+// 修改密码 — 含严格校验
+app.post('/settings/password', [
+  body('currentPassword').notEmpty().withMessage('请输入当前密码'),
+  body('newPassword').isLength({ min: 6 }).withMessage('新密码至少 6 位'),
+  body('confirmPassword').custom((val, { req }) => val === req.body.newPassword).withMessage('两次新密码不一致')
+], async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const user = await User.findById(req.session.user.id);
+    return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: errors.array()[0].msg });
+  }
   try {
     const user = await User.findById(req.session.user.id);
-    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword } = req.body;
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
       return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '当前密码错误' });
-    }
-    if (newPassword !== confirmPassword) {
-      return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '两次新密码不一致' });
-    }
-    if (newPassword.length < 6) {
-      return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '新密码至少6位' });
     }
     user.password = newPassword;
     await user.save();
@@ -673,6 +686,54 @@ app.post('/settings/password', async (req, res) => {
 app.get('/features', (req, res) => {
   res.render('features', { title: '功能介绍 - 旅途笔记' });
 });
+
+// ========== 数据统计可视化 ==========
+app.get('/stats', async (req, res) => {
+  try {
+    // 目的地排行榜：按游记数量降序
+    const destStats = await Travel.aggregate([
+      { $group: { _id: '$destination', count: { $sum: 1 }, totalViews: { $sum: '$views' }, totalLikes: { $sum: { $size: '$likes' } } } },
+      { $sort: { count: -1 } },
+      { $limit: 12 }
+    ]);
+    // 分类占比
+    const catStats = await Travel.aggregate([
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    // 月度发布趋势（近12个月）
+    const twelveMonthsAgo = new Date();
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+    const monthStats = await Travel.aggregate([
+      { $match: { createdAt: { $gte: twelveMonthsAgo } } },
+      { $group: { _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } }, count: { $sum: 1 }, views: { $sum: '$views' } } },
+      { $sort: { _id: 1 } }
+    ]);
+    // 最高浏览游记 TOP8
+    const topTravels = await Travel.find().sort({ views: -1 }).limit(8).lean();
+    // 全站总计
+    const totalTravels = await Travel.countDocuments();
+    const totalUsers = await User.countDocuments();
+    const totalViews = await Travel.aggregate([{ $group: { _id: null, sum: { $sum: '$views' } } }]);
+    const totalComments = await Comment.countDocuments();
+
+    res.render('stats', {
+      title: '数据统计 - 旅途笔记',
+      destStats: JSON.stringify(destStats),
+      catStats: JSON.stringify(catStats),
+      monthStats: JSON.stringify(monthStats),
+      topTravels,
+      totalTravels,
+      totalUsers,
+      totalViews: totalViews[0] ? totalViews[0].sum : 0,
+      totalComments
+    });
+  } catch (err) {
+    console.error('Stats 查询失败:', err);
+    next(err);
+  }
+});
+
 // ========== 退出登录 ==========
 app.get('/logout', (req, res) => {
   req.session.destroy();
@@ -828,10 +889,35 @@ app.post('/admin/upload', requireAdmin, (req, res) => {
   });
 });
 
+// ========== 404 处理 — 所有未匹配路由 ==========
+app.use((req, res) => {
+  res.status(404).render('error', {
+    title: '404 页面未找到 - 旅途笔记',
+    status: 404,
+    message: '您访问的页面不存在',
+    detail: '请检查网址是否正确，或返回首页继续浏览。',
+    backLink: '/',
+    backLabel: '返回首页'
+  });
+});
+
+// ========== 全局错误处理中间件 ==========
+app.use((err, req, res, next) => {
+  console.error('服务器错误:', err.message);
+  console.error(err.stack);
+  res.status(err.status || 500).render('error', {
+    title: '服务器错误 - 旅途笔记',
+    status: err.status || 500,
+    message: process.env.NODE_ENV === 'production' ? '服务器内部错误' : err.message,
+    detail: '请稍后再试。如问题持续存在，请联系管理员。',
+    backLink: '/',
+    backLabel: '返回首页'
+  });
+});
+
 // ========== 启动服务器 ==========
-// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
 const PORT = process.env.PORT || 12399;
-// AI 生成结束
 app.listen(PORT, () => {
   console.log(`服务器运行在 http://localhost:${PORT}`);
+  console.log(`环境变量 GITHUB_CLIENT_ID: ${process.env.GITHUB_CLIENT_ID ? '已设置' : '未设置（GitHub 登录不可用）'}`);
 });
