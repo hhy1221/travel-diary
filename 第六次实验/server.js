@@ -312,6 +312,7 @@ app.get('/travel/:id', async (req, res) => {
   }
 });
 // 提交评论
+// 发表评论：非本人评论时自动推送通知
 app.post('/travel/:id/comment', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
