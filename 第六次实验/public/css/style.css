@@ -28,7 +28,7 @@
   src: local('SimSun'), local('Noto Serif SC'), local('STSong'), local('serif');
 }
 
-body {
+body { /* 全屏固定背景图 + 半透明遮罩 */
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
   background: url('/images/hero.jpg') no-repeat center center fixed;
   background-size: cover;
@@ -605,8 +605,8 @@ img { max-width: 100%; height: auto; display: block; }
 #back-to-top:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 10px 28px rgba(233, 69, 96, 0.45); }
 
 /* ===== 弹窗/提示消息 ===== */
-.alert-success { background: #d4edda; padding: 12px; border-radius: 8px; margin-bottom: 16px; color: #155724; }
-.alert-error { background: #ffeaa7; padding: 12px; border-radius: 8px; margin-bottom: 16px; color: #d63031; }
+.alert-success { background: #d4edda; padding: 12px; border-radius: 8px; margin-bottom: 16px; color: #155724; } /* 操作成功反馈 */
+.alert-error { background: #ffeaa7; padding: 12px; border-radius: 8px; margin-bottom: 16px; color: #d63031; } /* 操作失败反馈 */
 
 /* ===== 加载动画 ===== */
 .fade-in-up { /* 卡片淡入上浮动画 + 错位延迟 */
