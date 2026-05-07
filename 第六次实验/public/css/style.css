@@ -23,7 +23,7 @@
   --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@font-face {
+@font-face { /* 中文标题字体系列：宋体/衬线优先 */
   font-family: 'TitleFont';
   src: local('SimSun'), local('Noto Serif SC'), local('STSong'), local('serif');
 }
