@@ -65,7 +65,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 解析表单提交的数据
 app.use(express.urlencoded({ extended: false }));
 
-// 配置 session（用于保持登录状态）
+// express-session 会话持久化：密钥签名 + 用户信息全局注入
 app.use(session({
   secret: 'travel-secret-key-2024',   // 密钥，可以随便写
   resave: false,
