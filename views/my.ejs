@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<h2 class="section-title">我的游记列表</h2>
+<% if (myTravels.length === 0) { %>
+  <div class="card" style="text-align:center;">还没有发布游记，<a href="/create">去写一篇</a>吧！</div>
+<% } else { %>
+  <div class="travel-grid">
+    <% myTravels.forEach(function(travel) { %>
+      <div class="travel-card">
+        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <div class="card-body">
+          <span class="tag"><%= travel.category %></span>
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <p style="color:var(--light);">目的地：<%= travel.destination %></p>
+          <div style="margin-top:8px;">
+            <a href="/travel/<%= travel._id %>/edit" class="btn btn-sm btn-secondary">编辑</a>
+            <form action="/travel/<%= travel._id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('确定删除？');">
+              <button type="submit" class="btn btn-sm" style="background:#e74c3c; color:#fff;">删除</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<h2 class="section-title">我的收藏列表</h2>
+<% if (!favorites || favorites.length === 0) { %>
+  <div class="card" style="text-align:center;">还没有收藏游记，<a href="/">去发现</a>吧！</div>
+<% } else { %>
+  <div class="travel-grid">
+    <% favorites.forEach(function(travel) { %>
+      <div class="travel-card">
+        <img src="<%= travel.image %>" alt="<%= travel.title %>">
+        <div class="card-body">
+          <span class="tag"><%= travel.category %></span>
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <p style="color:var(--light);">目的地：<%= travel.destination %></p>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,239 @@
+<%- include('partials/header') %>
+
+<style>
+  .f-wrap { max-width: 1100px; margin: 0 auto; }
+  .f-hero {
+    text-align: center; padding: 40px 20px 36px; margin-bottom: 28px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+    border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.5);
+  }
+  .f-hero h1 { font-size: 2.2rem; color: var(--text); margin-bottom: 8px; }
+  .f-hero .sub { color: var(--light); font-size: 1.05rem; }
+  .f-hero .tech { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .f-hero .tech span {
+    background: rgba(233,69,96,0.08); color: var(--primary); padding: 4px 14px;
+    border-radius: 20px; font-size: 0.82rem; font-weight: 600;
+  }
+
+  .f-section { margin-bottom: 36px; }
+  .f-section-title {
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--primary); font-weight: 700; margin-bottom: 6px;
+  }
+  .f-section-head { font-size: 1.3rem; color: var(--text); margin-bottom: 18px; }
+
+  .f-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .f-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .f-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  .f-card {
+    background: var(--card-bg); border: var(--card-border); border-radius: var(--radius);
+    padding: 24px; transition: all 0.25s ease; position: relative; overflow: hidden;
+  }
+  .f-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+  .f-card .icon-circle {
+    width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center;
+    justify-content: center; font-size: 1.4rem; margin-bottom: 12px;
+  }
+  .f-card h3 { font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+  .f-card p { color: var(--light); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+  .f-card .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem;
+    font-weight: 600; margin-top: 10px;
+  }
+  .bg-red { background: rgba(233,69,96,0.1); }
+  .bg-gold { background: rgba(212,175,55,0.1); }
+  .bg-blue { background: rgba(52,152,219,0.1); }
+  .bg-green { background: rgba(46,204,113,0.1); }
+  .bg-purple { background: rgba(155,89,182,0.1); }
+  .bd-red { border-left: 3px solid var(--primary); }
+  .bd-gold { border-left: 3px solid var(--gold); }
+  .bd-blue { border-left: 3px solid #3498db; }
+  .bd-green { border-left: 3px solid #2ecc71; }
+  .bd-purple { border-left: 3px solid #9b59b6; }
+
+  .f-spotlight {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 36px;
+  }
+  .spot-card {
+    background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden;
+    border: var(--card-border); transition: all 0.3s ease;
+  }
+  .spot-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .spot-img {
+    height: 140px; display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+  }
+  .spot-body { padding: 20px 24px 24px; }
+  .spot-body h3 { font-size: 1.15rem; margin-bottom: 8px; color: var(--text); }
+  .spot-body p { color: var(--light); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+
+  @media (max-width: 768px) {
+    .f-grid-2, .f-grid-3, .f-grid-4, .f-spotlight { grid-template-columns: 1fr; }
+    .f-hero h1 { font-size: 1.5rem; }
+  }
+</style>
+
+<div class="f-wrap">
+
+  <div class="f-hero">
+    <h1>旅途笔记 · 功能亮点</h1>
+    <p class="sub">一个用 Node.js + Express + MongoDB 构建的全功能旅游社交平台</p>
+    <div class="tech">
+      <span>Node.js</span><span>Express</span><span>MongoDB</span><span>EJS</span><span>Glassmorphism</span>
+    </div>
+  </div>
+
+  <div class="f-spotlight">
+    <div class="spot-card">
+      <div class="spot-img" style="background:linear-gradient(135deg,rgba(233,69,96,0.1),rgba(233,69,96,0.02));">✍️</div>
+      <div class="spot-body">
+        <h3>写游记</h3>
+        <p>Quill 富文本编辑器随心记录旅途见闻，封面图+多图上传，分类标签一键发布。</p>
+      </div>
+    </div>
+    <div class="spot-card">
+      <div class="spot-img" style="background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(212,175,55,0.02));">❤️</div>
+      <div class="spot-body">
+        <h3>互动社区</h3>
+        <p>点赞、评论、收藏三连互动，站内通知实时推送，让每一篇游记都不孤单。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-section-title">核心架构</div>
+    <div class="f-section-head">稳定可靠的技术地基</div>
+    <div class="f-grid-4">
+      <div class="f-card bd-red">
+        <div class="icon-circle bg-red">🛢️</div>
+        <h3>Mongoose ODM</h3>
+        <p>定义四核心模型，关联查询自动填充，pre-save 密码加密。</p>
+      </div>
+      <div class="f-card bd-gold">
+        <div class="icon-circle bg-gold">🧩</div>
+        <h3>MVC 分层</h3>
+        <p>模型-视图-控制器清晰分离，路由与业务逻辑独立维护。</p>
+      </div>
+      <div class="f-card bd-blue">
+        <div class="icon-circle bg-blue">🔐</div>
+        <h3>鉴权体系</h3>
+        <p>bcrypt 哈希 + session 持久化，全局中间件注入用户上下文。</p>
+      </div>
+      <div class="f-card bd-green">
+        <div class="icon-circle bg-green">☁️</div>
+        <h3>Railway 部署</h3>
+        <p>GitHub 自动部署，MONGODB_URI 环境变量，崩溃自动重启。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-section-title">内容创作</div>
+    <div class="f-section-head">记录每一段旅程</div>
+    <div class="f-grid-3">
+      <div class="f-card bd-red">
+        <div class="icon-circle bg-red">📝</div>
+        <h3>Quill 富文本编辑</h3>
+        <p>加粗/斜体/标题/列表，编辑时完美回显，Markdown 级排版体验。</p>
+      </div>
+      <div class="f-card bd-purple">
+        <div class="icon-circle bg-purple">📸</div>
+        <h3>Multer 多图上传</h3>
+        <p>封面图 + 画廊分字段处理，编辑时可预览替换，自动创建目录。</p>
+      </div>
+      <div class="f-card bd-gold">
+        <div class="icon-circle bg-gold">🏷️</div>
+        <h3>分类标签体系</h3>
+        <p>自然风光/城市漫步/美食之旅/历史文化，发布选择搜索过滤。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-section-title">社交互动</div>
+    <div class="f-section-head">分享与交流</div>
+    <div class="f-grid-3">
+      <div class="f-card bd-red">
+        <div class="icon-circle bg-red">❤️</div>
+        <h3>Toggle 点赞</h3>
+        <p>数组存储用户 ID，前后端联动判断状态，按钮即时切换样式。</p>
+      </div>
+      <div class="f-card bd-blue">
+        <div class="icon-circle bg-blue">💬</div>
+        <h3>评论系统</h3>
+        <p>独立 Comment 模型关联游记，发表实时刷新，自动通知作者。</p>
+      </div>
+      <div class="f-card bd-gold">
+        <div class="icon-circle bg-gold">⭐</div>
+        <h3>收藏夹</h3>
+        <p>用户模型内嵌收藏数组，个人中心双面板展示我的/收藏。</p>
+      </div>
+      <div class="f-card bd-green">
+        <div class="icon-circle bg-green">🔔</div>
+        <h3>站内通知</h3>
+        <p>点赞/评论即时推送，未读计数徽标，一键全部已读。</p>
+      </div>
+      <div class="f-card bd-purple">
+        <div class="icon-circle bg-purple">👤</div>
+        <h3>个人主页</h3>
+        <p>公开头像/简介/游记/收藏，点击作者名直达个人空间。</p>
+      </div>
+      <div class="f-card bd-red">
+        <div class="icon-circle bg-red">⚙️</div>
+        <h3>管理员后台</h3>
+        <p>网页端配置 Hero 轮播/静止 + 图片选择 + 向管理员上传新图。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="f-section">
+    <div class="f-section-title">界面体验</div>
+    <div class="f-section-head">从内到外的优雅</div>
+    <div class="f-grid-4">
+      <div class="f-card bd-red">
+        <div class="icon-circle bg-red">🪟</div>
+        <h3>Glassmorphism</h3>
+        <p>毛玻璃模糊 + 半透明卡片 + 柔和阴影统一全站视觉。</p>
+      </div>
+      <div class="f-card bd-gold">
+        <div class="icon-circle bg-gold">🌄</div>
+        <h3>背景轮播</h3>
+        <p>全屏大图 5 秒淡入淡出，管理员可配置模式与图片。</p>
+      </div>
+      <div class="f-card bd-blue">
+        <div class="icon-circle bg-blue">📱</div>
+        <h3>三端响应式</h3>
+        <p>1024/768/480px 三断点 Flexbox+Grid 自适应布局。</p>
+      </div>
+      <div class="f-card bd-green">
+        <div class="icon-circle bg-green">✨</div>
+        <h3>滚动动画</h3>
+        <p>IntersectionObserver 淡入上浮 + 错位延迟序列。</p>
+      </div>
+      <div class="f-card bd-purple">
+        <div class="icon-circle bg-purple">🗺️</div>
+        <h3>Leaflet 地图</h3>
+        <p>Nominatim 地理编码自动定位目的地，标记弹窗展示位置。</p>
+      </div>
+      <div class="f-card bd-red">
+        <div class="icon-circle bg-red">📄</div>
+        <h3>服务端分页</h3>
+        <p>skip/limit 每页 12 条，页码导航替换无限滚动。</p>
+      </div>
+      <div class="f-card bd-gold">
+        <div class="icon-circle bg-gold">🔍</div>
+        <h3>全文搜索</h3>
+        <p>$regex 匹配标题/目的地 + 结果页继承首页分页布局。</p>
+      </div>
+      <div class="f-card bd-blue">
+        <div class="icon-circle bg-blue">⬆️</div>
+        <h3>回到顶部</h3>
+        <p>右下角固定按钮，超一屏显示，平滑返回顶部。</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

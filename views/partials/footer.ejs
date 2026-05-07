@@ -1,0 +1,57 @@
+  </main>
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 旅途笔记 - 记录你的旅行故事</p>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+
+<div id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+  // 以下导航栏滚动效果由"Trae AI (DeepSeek-V4-Pro)"生成
+  var navbar = document.querySelector('.navbar');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+  // AI 生成结束
+</script>
+
+<script>
+  var backToTop = document.getElementById('back-to-top');
+  window.addEventListener('scroll', function() {
+    backToTop.style.display = window.scrollY > 500 ? 'flex' : 'none';
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var cards = document.querySelectorAll('.travel-card');
+    cards.forEach(function(card) { card.classList.add('fade-in-up'); });
+  });
+</script>
+
+<script>
+  // 以下滚动渐显效果由"Trae AI (DeepSeek-V4-Pro)"生成
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
+  document.querySelectorAll('.section-header').forEach(function(el) {
+    if (!el.classList.contains('reveal')) el.classList.add('reveal');
+    revealObserver.observe(el);
+  });
+  // AI 生成结束
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<%- include('partials/header') %>
+
+<div class="card" style="max-width:800px; margin:0 auto;">
+  <h2 style="margin-bottom:25px; color:var(--primary);">编辑游记内容</h2>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div style="background:#ffeaa7; padding:10px; border-radius:8px; margin-bottom:15px; color:#d63031;"><%= error %></div>
+  <% } %>
+  <form action="/travel/<%= travel._id %>/edit" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label>标题</label>
+      <input type="text" name="title" value="<%= travel.title %>" required>
+    </div>
+    <div class="form-group">
+      <label>目的地</label>
+      <input type="text" name="destination" value="<%= travel.destination %>" required>
+    </div>
+    <div class="form-group">
+      <label>类型</label>
+      <select name="category">
+        <% ['自然风光','城市漫步','美食之旅','历史文化','其他'].forEach(function(cat){ %>
+          <option value="<%= cat %>" <%= travel.category === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>当前封面</label>
+      <img src="<%= travel.image %>" style="width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+      <input type="file" name="image" accept="image/*" placeholder="更换封面">
+    </div>
+    <div class="form-group">
+      <label>更换/添加更多图片</label>
+      <% if (travel.gallery && travel.gallery.length > 0) { %>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <% travel.gallery.forEach(function(img){ %>
+            <img src="<%= img %>" style="width:80px;height:60px;object-fit:cover;border-radius:6px;">
+          <% }); %>
+        </div>
+      <% } %>
+      <input type="file" name="gallery" accept="image/*" multiple>
+    </div>
+    <div class="form-group">
+      <label>正文</label>
+      <input type="hidden" name="content" id="content-input" value="<%= travel.content.replace(/"/g, '&quot;') %>">
+      <div id="editor-container" style="height: 400px; background: rgba(255,255,255,0.9); border-radius: 10px;"></div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;">保存修改</button>
+  </form>
+  <script>
+  var quill = new Quill('#editor-container', {
+    theme: 'snow',
+    placeholder: '分享你的旅行故事...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'header': [1, 2, false] }],
+        ['link', 'image'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ]
+    }
+  });
+
+  // 把已有内容加载到编辑器
+  var existingContent = document.getElementById('content-input').value;
+  if (existingContent) {
+    quill.root.innerHTML = existingContent;
+  }
+
+  // 提交时同步内容
+  var form = document.querySelector('form');
+  form.onsubmit = function() {
+    document.getElementById('content-input').value = quill.root.innerHTML;
+  };
+</script>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,193 @@
+<%- include('partials/header') %>
+
+<% if (currentPath === '/') { %>
+<!-- 全屏 Hero 横幅：沉浸式大图背景 + 玻璃拟态半透明遮罩 -->
+<% 
+  var heroMode = (hero && hero.heroMode) ? hero.heroMode : 'carousel';
+  var heroImages = (hero && hero.heroImages && hero.heroImages.length) ? hero.heroImages : ['hero11.jpg'];
+  var heroInterval = (hero && hero.heroInterval) ? hero.heroInterval : 5000;
+  var heroStaticImage = (hero && hero.heroStaticImage) ? hero.heroStaticImage : heroImages[0];
+%>
+<div class="hero-slideshow">
+  <% if (heroMode === 'carousel') { %>
+    <% heroImages.forEach(function(img, i) { %>
+      <div class="hero-slide <%= i === 0 ? 'active' : '' %>" style="background-image: url('/images/<%= img %>');"></div>
+    <% }); %>
+  <% } else { %>
+    <div class="hero-slide active" style="background-image: url('/images/<%= heroStaticImage %>');"></div>
+  <% } %>
+  <div class="hero-overlay"></div>
+  <div class="hero-bottom-fade"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ TRAVEL DIARY ✦</div>
+    <h1>探索世界，<br>记录<span class="gold">旅程</span></h1>
+    <p>发现下一站的灵感，分享你的旅行故事</p>
+    <div class="btn-group">
+      <% if (!currentUser) { %>
+        <a href="/register" class="btn btn-primary">✨ 立即注册</a>
+        <a href="/login" class="btn btn-outline">已有账号？登录</a>
+      <% } else { %>
+        <a href="/create" class="btn btn-primary">✏️ 写一篇游记</a>
+        <a href="/features" class="btn btn-outline">探索功能</a>
+      <% } %>
+    </div>
+  </div>
+  <% if (heroMode === 'carousel' && heroImages.length > 1) { %>
+  <div class="slide-dots">
+    <% heroImages.forEach(function(img, i) { %>
+      <span class="dot <%= i === 0 ? 'active' : '' %>"></span>
+    <% }); %>
+  </div>
+  <% } %>
+</div>
+
+<!-- 热门目的地导航卡片：栅格布局 + 悬停上浮 + 图片暗化遮罩 -->
+<div class="section-header">
+  <div class="accent-line"></div>
+  <h2 class="section-title">热门目的地</h2>
+  <span class="section-subtitle">精选旅行灵感</span>
+</div>
+<div class="dest-grid">
+  <a href="/search?q=大理" class="dest-card">
+    <img src="/images/dali.jpg" alt="大理">
+    <div class="info"><h3>大理</h3><p>风花雪月</p></div>
+  </a>
+  <a href="/search?q=东京" class="dest-card">
+    <img src="/images/tokyo.jpg" alt="东京">
+    <div class="info"><h3>东京</h3><p>霓虹都市</p></div>
+  </a>
+  <a href="/search?q=成都" class="dest-card">
+    <img src="/images/chengdu.jpg" alt="成都">
+    <div class="info"><h3>成都</h3><p>美食天堂</p></div>
+  </a>
+  <a href="/search?q=三亚" class="dest-card">
+    <img src="/images/sanya.jpg" alt="三亚">
+    <div class="info"><h3>三亚</h3><p>冬日暖阳</p></div>
+  </a>
+</div>
+
+<!-- 热门游记推荐区：按浏览量排序展示 + 统一卡片组件 -->
+<% if (typeof popularTravels !== 'undefined' && popularTravels.length > 0) { %>
+  <div class="section-header">
+    <div class="accent-line"></div>
+    <h2 class="section-title">热门游记</h2>
+    <span class="section-subtitle">大家最爱的旅行故事</span>
+  </div>
+  <div class="travel-grid">
+    <% popularTravels.forEach(function(travel) { %>
+      <div class="travel-card">
+        <a href="/travel/<%= travel._id %>">
+          <div class="img-wrapper">
+            <img src="<%= travel.image %>" alt="<%= travel.title %>">
+            <span class="category-tag"><%= travel.category %></span>
+          </div>
+        </a>
+        <div class="card-body">
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <div class="card-meta">
+            <span>📍 <%= travel.destination %></span>
+            <span>👁 <%= travel.views %></span>
+            <span>❤ <%= travel.likes.length %></span>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+<% } %>
+
+<% if (currentPath.startsWith('/search')) { %>
+<div class="section-header">
+  <div class="accent-line"></div>
+  <h2 class="section-title">搜索结果</h2>
+  <span class="section-subtitle">"<%= query %>" — 找到 <%= typeof total !== 'undefined' ? total : travels.length %> 篇游记</span>
+</div>
+<% } else { %>
+<div class="section-header">
+  <div class="accent-line"></div>
+  <h2 class="section-title">最新游记</h2>
+  <span class="section-subtitle">刚刚发布的新鲜内容</span>
+</div>
+<% } %>
+<% if (travels.length === 0) { %>
+  <div style="text-align:center; padding: 60px; color: var(--text-muted);">
+    <p style="font-size:1.2rem;">🌍 还没有人分享游记，成为第一个探索者吧！</p>
+  </div>
+<% } else { %>
+  <div class="travel-grid">
+    <% travels.forEach(function(travel) { %>
+      <div class="travel-card">
+        <a href="/travel/<%= travel._id %>">
+          <div class="img-wrapper">
+            <img src="<%= travel.image %>" alt="<%= travel.title %>">
+            <span class="category-tag"><%= travel.category %></span>
+          </div>
+        </a>
+        <div class="card-body">
+          <h3><a href="/travel/<%= travel._id %>"><%= travel.title %></a></h3>
+          <div class="card-meta">
+            <span>📍 <%= travel.destination %></span>
+            <span>👁 <%= travel.views %></span>
+            <span>❤ <%= travel.likes.length %></span>
+          </div>
+          <div class="card-footer">
+            <span class="author">
+              <img src="<%= travel.author && travel.author.avatar ? travel.author.avatar : '/images/default-avatar.png' %>" class="author-avatar" alt="头像">
+              <a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a>
+            </span>
+            <span><%= travel.createdAt.toLocaleDateString('zh-CN') %></span>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<!-- ===== 分页导航 ===== -->
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+<div class="pagination">
+  <% if (currentPage > 1) { %>
+    <a href="?page=1<%= query ? '&q=' + encodeURIComponent(query) : '' %>">&laquo;</a>
+    <a href="?page=<%= currentPage - 1 %><%= query ? '&q=' + encodeURIComponent(query) : '' %>">‹</a>
+  <% } %>
+  <%
+    var start = Math.max(1, currentPage - 2);
+    var end = Math.min(totalPages, currentPage + 2);
+    if (start > 1) { %><span class="ellipsis">...</span><% }
+    for (var i = start; i <= end; i++) {
+      if (i === currentPage) { %>
+        <span class="current"><%= i %></span>
+      <% } else { %>
+        <a href="?page=<%= i %><%= query ? '&q=' + encodeURIComponent(query) : '' %>"><%= i %></a>
+      <% }
+    }
+    if (end < totalPages) { %><span class="ellipsis">...</span><% }
+  %>
+  <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %><%= query ? '&q=' + encodeURIComponent(query) : '' %>">›</a>
+    <a href="?page=<%= totalPages %><%= query ? '&q=' + encodeURIComponent(query) : '' %>">&raquo;</a>
+  <% } %>
+</div>
+<% } %>
+
+<script>
+  var slides = document.querySelectorAll('.hero-slide');
+  var dots = document.querySelectorAll('.dot');
+  var current = 0;
+  var total = slides.length;
+  if (total > 1) {
+    function showSlide(n) {
+      slides[current].classList.remove('active');
+      if (dots[current]) dots[current].classList.remove('active');
+      current = (n + total) % total;
+      slides[current].classList.add('active');
+      if (dots[current]) dots[current].classList.add('active');
+    }
+    setInterval(function() { showSlide(current + 1); }, <%= heroInterval %>);
+    dots.forEach(function(dot, i) {
+      dot.addEventListener('click', function() { showSlide(i); });
+    });
+  }
+</script>
+
+<%- include('partials/footer') %>
