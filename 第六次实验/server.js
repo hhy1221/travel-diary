@@ -79,6 +79,7 @@ app.use(session({
 // 全局中间件：session 用户注入 + 未读通知计数
 app.use(async (req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  res.locals.currentPath = req.path;
   if (req.session.user) {
     try {
       const unreadCount = await Notification.countDocuments({

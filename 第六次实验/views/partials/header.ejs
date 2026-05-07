@@ -49,12 +49,14 @@
     </div>
   </nav>
 
+  <% if (currentPath === '/' || currentPath.startsWith('/search')) { %>
   <div class="search-bar">
     <form action="/search" method="GET">
       <input type="text" name="q" placeholder="搜索目的地、游记标题..." value="<%= typeof query !== 'undefined' ? query : '' %>">
       <button type="submit">🔍 搜索</button>
     </form>
   </div>
+  <% } %>
 
   <script>
     var hamburgerBtn = document.getElementById('hamburger-btn');
