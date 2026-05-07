@@ -93,7 +93,7 @@ app.use(async (req, res, next) => {
 // ========== 路由：首页 ==========
 app.get('/', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const perPage = parseInt(req.query.perPage) || 12;
+  const perPage = parseInt(req.query.perPage) || 12; // 分页：skip/limit 服务端分页，每页12条
 
   try {
     const total = await Travel.countDocuments();
