@@ -630,7 +630,7 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
+// 种子数据生成：10个预设用户 + 8篇游记 + 模拟点赞评论互动
 app.get('/__seed__', async (req, res) => {
   try {
     const existingTravels = await Travel.countDocuments({});
