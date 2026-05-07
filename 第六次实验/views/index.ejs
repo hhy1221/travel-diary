@@ -1,5 +1,6 @@
 <%- include('partials/header') %>
 
+<% if (currentPath === '/') { %>
 <!-- 全屏 Hero 横幅：沉浸式大图背景 + 玻璃拟态半透明遮罩 -->
 <% 
   var heroMode = (hero && hero.heroMode) ? hero.heroMode : 'carousel';
@@ -93,13 +94,21 @@
     <% }); %>
   </div>
 <% } %>
+<% } %>
 
-<!-- ===== 最新游记 ===== -->
+<% if (currentPath.startsWith('/search')) { %>
+<div class="section-header">
+  <div class="accent-line"></div>
+  <h2 class="section-title">搜索结果</h2>
+  <span class="section-subtitle">"<%= query %>" — 找到 <%= typeof total !== 'undefined' ? total : travels.length %> 篇游记</span>
+</div>
+<% } else { %>
 <div class="section-header">
   <div class="accent-line"></div>
   <h2 class="section-title">最新游记</h2>
   <span class="section-subtitle">刚刚发布的新鲜内容</span>
 </div>
+<% } %>
 <% if (travels.length === 0) { %>
   <div style="text-align:center; padding: 60px; color: var(--text-muted);">
     <p style="font-size:1.2rem;">🌍 还没有人分享游记，成为第一个探索者吧！</p>

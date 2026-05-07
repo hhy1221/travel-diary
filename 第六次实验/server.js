@@ -155,6 +155,7 @@ app.get('/search', async (req, res) => {
       travels: travels,
       currentPage: safePage,
       totalPages: totalPages,
+      total: total,
       query: query,
       hero: hero
     });
