@@ -144,38 +144,38 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* ===== 搜索条 ===== */
 .search-bar {
-  max-width: 1300px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 20px 48px 0;
+  padding: 16px 0 0;
 }
 .search-bar form {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: 8px 8px 8px 20px;
+  padding: 5px 5px 5px 16px;
   border-radius: 50px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--card-border);
 }
 .search-bar input {
   flex: 1;
-  padding: 14px 0;
+  padding: 10px 0;
   border: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   outline: none;
   background: transparent;
   color: var(--text);
 }
 .search-bar input::placeholder { color: var(--text-muted); }
 .search-bar button {
-  padding: 14px 32px;
+  padding: 10px 28px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 50px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
@@ -668,7 +668,7 @@ img { max-width: 100%; height: auto; display: block; }
   .hero-slideshow { margin: 10px 0 40px; min-height: 50vh; border-radius: var(--radius); }
   .hero-content h1 { font-size: 2.8rem; }
   .hero-content p { font-size: 1.1rem; }
-  .search-bar { padding: 16px 28px 0; }
+  .search-bar { padding: 12px 28px 0; max-width: none; }
   .dest-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .dest-card { aspect-ratio: 16/10; }
   .travel-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
@@ -693,15 +693,14 @@ img { max-width: 100%; height: auto; display: block; }
     bottom: 0;
     flex-direction: column;
     gap: 0;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: -2px 0 24px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     z-index: 999;
-    display: none;
+    padding: 8px 0;
   }
-  .nav-menu.active { display: flex; }
   .nav-menu li { width: 100%; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
   .nav-menu li:last-child { border-bottom: none; }
   .nav-menu a { display: block; padding: 16px 20px; font-size: 0.95rem !important; color: var(--text) !important; }
@@ -709,10 +708,10 @@ img { max-width: 100%; height: auto; display: block; }
   .nav-menu a:active { background: rgba(0, 0, 0, 0.04); }
   .nav-user { display: block; padding: 16px 20px; font-size: 0.95rem; }
 
-  .search-bar { padding: 12px 16px 0; }
-  .search-bar form { padding: 6px 6px 6px 16px; }
-  .search-bar input { padding: 10px 0; font-size: 0.9rem; }
-  .search-bar button { padding: 10px 18px; font-size: 0.85rem; }
+  .search-bar { padding: 10px 16px 0; max-width: none; }
+  .search-bar form { padding: 4px 4px 4px 12px; }
+  .search-bar input { padding: 8px 0; font-size: 0.85rem; }
+  .search-bar button { padding: 8px 16px; font-size: 0.8rem; }
 
   .main-content { padding: 20px 16px 50px; }
 
@@ -721,6 +720,15 @@ img { max-width: 100%; height: auto; display: block; }
     margin: 8px 0 30px;
     border-radius: var(--radius);
     background-attachment: scroll;
+  }
+  .hero-slide { background-attachment: scroll; }
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(0,0,0,0.15) 0%,
+      rgba(0,0,0,0.05) 40%,
+      rgba(0,0,0,0.12) 100%
+    );
   }
   .hero-content h1 { font-size: 2rem; letter-spacing: 1px; }
   .hero-content p { font-size: 0.95rem; margin-bottom: 24px; }
