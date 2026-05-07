@@ -58,6 +58,7 @@ const cpUpload = upload.fields([
 // ========== 中间件配置 ==========
 // 设置模板引擎为 ejs
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // 提供静态文件服务（css、图片、前端 js 等）
 app.use(express.static(path.join(__dirname, 'public')));
