@@ -72,7 +72,7 @@ app.use(session({
   saveUninitialized: false
 }));
 
-// 将 session 中的用户信息传给所有页面
+// 全局中间件：session 用户注入 + 未读通知计数
 app.use(async (req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   if (req.session.user) {
