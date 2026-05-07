@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const travelSchema = new mongoose.Schema({
-  title: {
+  title: { // 游记标题
     type: String,
     required: true,
     trim: true

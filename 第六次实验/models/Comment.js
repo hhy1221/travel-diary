@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
-  content: {
+  content: { // 评论内容
     type: String,
     required: true
   },

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  recipient: {
+  recipient: { // 接收者
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
