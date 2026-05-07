@@ -31,4 +31,4 @@ const notificationSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Notification', notificationSchema);
+module.exports = mongoose.model('Notification', notificationSchema); /* 通知模型：发送者/接收者/类型/已读 */

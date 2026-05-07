@@ -29,4 +29,4 @@ const commentSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Comment', commentSchema);
+module.exports = mongoose.model('Comment', commentSchema); /* 评论模型：内容/作者/游记关联/点赞 */
