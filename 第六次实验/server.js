@@ -208,6 +208,7 @@ app.get('/login', (req, res) => {
 });
 
 // 处理登录表单
+// 用户登录：密码验证 + session 创建 + 重定向
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
