@@ -27,15 +27,18 @@ const Setting = require('./models/Setting');
 // ========== 连接 MongoDB ==========
 const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/travel';
 const mongoOptions = process.env.MONGODB_URI
-  ? {}
+  ? { authSource: 'admin' }
   : { auth: { username: 'huanghanyang', password: 'S20061221hhy' }, authSource: 'admin' };
 
-mongoose.connect(mongoURI, mongoOptions).then(async () => {
-  console.log('MongoDB 连接成功');
-  const existing = await Setting.findOne();
-  if (!existing) await Setting.create({ heroMode: 'carousel', heroImages: ['hero11.jpg','hero121.jpg','hero211.jpg','hero111.jpg','hero1 (2).jpg','hero.jpg'], heroInterval: 5000, heroStaticImage: 'hero11.jpg' });
-}).catch(err => {
-  console.log('MongoDB 连接失败：', err);
+mongoose.connect(mongoURI, mongoOptions)
+  .then(async () => {
+    console.log('MongoDB 连接成功');
+    const existing = await Setting.findOne();
+    if (!existing) await Setting.create({ heroMode: 'carousel', heroImages: ['hero11.jpg','hero121.jpg','hero211.jpg','hero111.jpg','hero1 (2).jpg','hero.jpg'], heroInterval: 5000, heroStaticImage: 'hero11.jpg' });
+})
+  .catch(err => {
+    console.error('MongoDB 连接失败详情：', err.message);
+    console.error('使用 URI：', mongoURI.replace(/:[^:@]+@/, ':****@'));
 });
 
 // ========== 文件上传设置 ==========
