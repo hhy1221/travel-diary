@@ -65,7 +65,7 @@ img { max-width: 100%; height: auto; display: block; }
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   transition: all var(--transition);
 }
-.navbar.scrolled {
+.navbar.scrolled { /* 滚动后导航栏加深半透明 */
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
 }
@@ -118,7 +118,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-size: 0.93rem;
 }
 
-.hamburger {
+.hamburger { /* 移动端汉堡菜单按钮 */
   display: none;
   flex-direction: column;
   gap: 5px;
