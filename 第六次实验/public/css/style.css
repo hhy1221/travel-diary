@@ -323,7 +323,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
-/* ===== 分区标题 ===== */
+/* 分区标题：白色渐变 + 强调色竖线 + 圆角边框 */
 .section-header {
   display: flex;
   align-items: center;
