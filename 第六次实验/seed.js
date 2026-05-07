@@ -1,4 +1,4 @@
-// 以下内容由"Trae AI (DeepSeek-V4-Pro)"生成
+// 独立种子脚本：10个用户 + 11篇游记 + 评论点赞收藏通知 全自动生成
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const path = require('path');

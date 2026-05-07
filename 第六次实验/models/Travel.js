@@ -46,5 +46,5 @@ const travelSchema = new mongoose.Schema({
   }
 });
 
-const Travel = mongoose.model('Travel', travelSchema);
+const Travel = mongoose.model('Travel', travelSchema); /* 游记模型：标题/目的地/内容/图片/分类/点赞/作者 */
 module.exports = Travel;
