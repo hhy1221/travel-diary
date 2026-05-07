@@ -185,7 +185,7 @@ img { max-width: 100%; height: auto; display: block; }
 .main-content {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 0 48px 80px;
+  padding: 30px 48px 80px;
 }
 
 /* ===== 横幅区域 (Hero) ===== */
@@ -659,7 +659,7 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 1024px) {
   .navbar { padding: 0 28px; }
   .nav-menu { gap: 20px; }
-  .main-content { padding: 0 28px 60px; }
+  .main-content { padding: 24px 28px 60px; }
   .hero-slideshow { margin: 10px 0 40px; min-height: 50vh; border-radius: var(--radius); }
   .hero-content h1 { font-size: 2.8rem; }
   .hero-content p { font-size: 1.1rem; }
@@ -709,7 +709,7 @@ img { max-width: 100%; height: auto; display: block; }
   .search-bar input { padding: 10px 0; font-size: 0.9rem; }
   .search-bar button { padding: 10px 18px; font-size: 0.85rem; }
 
-  .main-content { padding: 0 16px 50px; }
+  .main-content { padding: 20px 16px 50px; }
 
   .hero-slideshow {
     min-height: 45vh;
