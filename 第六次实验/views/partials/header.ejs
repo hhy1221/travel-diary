@@ -53,4 +53,28 @@
     </form>
   </div>
 
+  <script>
+    var hamburgerBtn = document.getElementById('hamburger-btn');
+    var navMenu = document.getElementById('nav-menu');
+    if (hamburgerBtn && navMenu) {
+      hamburgerBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        hamburgerBtn.classList.toggle('active');
+        navMenu.classList.toggle('active');
+      });
+      document.addEventListener('click', function(e) {
+        if (!navMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+          hamburgerBtn.classList.remove('active');
+          navMenu.classList.remove('active');
+        }
+      });
+      navMenu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+          hamburgerBtn.classList.remove('active');
+          navMenu.classList.remove('active');
+        });
+      });
+    }
+  </script>
+
   <main class="main-content">

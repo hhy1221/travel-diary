@@ -23,34 +23,6 @@
 </script>
 
 <script>
-  // 以下汉堡菜单交互代码由"Trae AI (DeepSeek-V4-Pro)"生成
-  var hamburgerBtn = document.getElementById('hamburger-btn');
-  var navMenu = document.getElementById('nav-menu');
-
-  if (hamburgerBtn && navMenu) {
-    hamburgerBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      hamburgerBtn.classList.toggle('active');
-      navMenu.classList.toggle('active');
-    });
-    document.addEventListener('click', function(e) {
-      if (!navMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-        hamburgerBtn.classList.remove('active');
-        navMenu.classList.remove('active');
-      }
-    });
-    var navLinks = navMenu.querySelectorAll('a');
-    navLinks.forEach(function(link) {
-      link.addEventListener('click', function() {
-        hamburgerBtn.classList.remove('active');
-        navMenu.classList.remove('active');
-      });
-    });
-  }
-  // AI 生成结束
-</script>
-
-<script>
   var backToTop = document.getElementById('back-to-top');
   window.addEventListener('scroll', function() {
     backToTop.style.display = window.scrollY > 500 ? 'flex' : 'none';
