@@ -31,7 +31,7 @@ mongoose.connect(mongoURI, mongoOptions).then(() => {
 });
 // AI 生成结束
 
-// ========== 确保上传文件夹存在 ==========
+// 确保上传目录存在：自动创建 public/uploads 文件夹
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
