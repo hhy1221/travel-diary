@@ -1,4 +1,5 @@
 // 引入所需模块
+// Express 框架 + EJS 模板引擎 + Session 会话管理
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
