@@ -59,31 +59,35 @@ const cpUpload = upload.fields([
 ]);
 
 // ========== Passport GitHub OAuth 第三方登录配置 ==========
-passport.use(new GitHubStrategy({
-  clientID: process.env.GITHUB_CLIENT_ID || '',
-  clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
-  callbackURL: (process.env.RAILWAY_PUBLIC_DOMAIN ? 'https://' + process.env.RAILWAY_PUBLIC_DOMAIN : 'http://localhost:12399') + '/auth/github/callback'
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    // 查找是否有已关联 GitHub 的用户
-    let user = await User.findOne({ githubId: profile.id });
-    if (user) return done(null, { id: user._id, username: user.username, isAdmin: user.isAdmin });
-    // 用 GitHub 用户名作为新用户昵称，确保唯一性
-    let username = (profile.username || 'github_user').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_]/g, '_');
-    const existing = await User.findOne({ username });
-    if (existing) username = username + '_' + profile.id.slice(0, 6);
-    user = await User.create({
-      username,
-      githubId: profile.id,
-      githubUsername: profile.username || '',
-      avatar: (profile.photos && profile.photos[0] && profile.photos[0].value) || '/images/default-avatar.png',
-      isAdmin: false
-    });
-    return done(null, { id: user._id, username: user.username, isAdmin: user.isAdmin });
-  } catch (err) {
-    return done(err);
-  }
-}));
+// 仅在环境变量已配时才启用，避免空值导致服务器崩溃
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: (process.env.RAILWAY_PUBLIC_DOMAIN ? 'https://' + process.env.RAILWAY_PUBLIC_DOMAIN : 'http://localhost:12399') + '/auth/github/callback'
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ githubId: profile.id });
+      if (user) return done(null, { id: user._id, username: user.username, isAdmin: user.isAdmin });
+      let username = (profile.username || 'github_user').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_]/g, '_');
+      const existing = await User.findOne({ username });
+      if (existing) username = username + '_' + profile.id.slice(0, 6);
+      user = await User.create({
+        username,
+        githubId: profile.id,
+        githubUsername: profile.username || '',
+        avatar: (profile.photos && profile.photos[0] && profile.photos[0].value) || '/images/default-avatar.png',
+        isAdmin: false
+      });
+      return done(null, { id: user._id, username: user.username, isAdmin: user.isAdmin });
+    } catch (err) {
+      return done(err);
+    }
+  }));
+  console.log('GitHub OAuth 已启用');
+} else {
+  console.log('GitHub OAuth 未配置（缺少 GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET），第三方登录已禁用');
+}
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
@@ -104,10 +108,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 全局中间件：注入当前用户、当前路径、未读通知数
+// 全局中间件：注入当前用户、当前路径、未读通知数、GitHub 登录开关
 app.use(async (req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.currentPath = req.path;
+  res.locals.githubEnabled = !!(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET);
   if (req.session.user) {
     try {
       const unreadCount = await Notification.countDocuments({
@@ -251,16 +256,18 @@ app.post('/login', [
     res.render('login', { title: '登录 - 旅途笔记', error: '登录失败，请稍后再试' });
   }
 });
-// ========== GitHub OAuth 第三方登录 ==========
-app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+// ========== GitHub OAuth 第三方登录（仅环境变量已配时注册路由） ==========
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-app.get('/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: '/login', failureFlash: false }),
-  (req, res) => {
-    req.session.user = req.user;
-    res.redirect('/');
-  }
-);
+  app.get('/auth/github/callback',
+    passport.authenticate('github', { failureRedirect: '/login', failureFlash: false }),
+    (req, res) => {
+      req.session.user = req.user;
+      res.redirect('/');
+    }
+  );
+}
 
 // ========== 发布游记页面 ==========
 app.get('/create', (req, res) => {
