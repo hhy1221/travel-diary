@@ -118,7 +118,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-// ========== 搜索游记 ==========
+// 全文搜索：标题 + 目的地模糊匹配 + 分页结果
 app.get('/search', async (req, res) => {
   const query = req.query.q || '';
   const page = parseInt(req.query.page) || 1;
