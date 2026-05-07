@@ -160,6 +160,7 @@ app.get('/register', (req, res) => {
 });
 
 // 处理注册表单
+// 用户注册：表单验证 + bcrypt 哈希 + 自动登录
 app.post('/register', async (req, res) => {
   try {
     console.log('===== 注册请求开始 =====');
