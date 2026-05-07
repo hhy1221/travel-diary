@@ -148,12 +148,15 @@ app.get('/search', async (req, res) => {
       .skip((safePage - 1) * perPage)
       .limit(perPage);
     
+    const hero = await Setting.findOne();
+
     res.render('index', { 
       title: '搜索: ' + query + ' - 旅途笔记',
       travels: travels,
       currentPage: safePage,
       totalPages: totalPages,
-      query: query
+      query: query,
+      hero: hero
     });
   } catch (err) {
     console.error(err);
@@ -631,6 +634,31 @@ app.post('/settings', upload.single('avatar'), async (req, res) => {
     });
   }
 });
+
+app.post('/settings/password', async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    const user = await User.findById(req.session.user.id);
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '当前密码错误' });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '两次新密码不一致' });
+    }
+    if (newPassword.length < 6) {
+      return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '新密码至少6位' });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.render('settings', { title: '账号设置 - 旅途笔记', user, success: '密码修改成功！' });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/settings');
+  }
+});
+
 // ========== 功能介绍页面 ==========
 app.get('/features', (req, res) => {
   res.render('features', { title: '功能介绍 - 旅途笔记' });
