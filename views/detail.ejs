@@ -1,0 +1,160 @@
+<%- include('partials/header') %>
+
+<a href="/" class="btn btn-secondary btn-sm" style="margin-bottom:20px;">&larr; 返回首页</a>
+
+<div class="card">
+  <img src="<%= travel.image %>" alt="<%= travel.title %>" style="width:100%; max-height:420px; object-fit:cover; border-radius:12px; margin-bottom:20px;">
+  
+  <span class="tag"><%= travel.category %></span>
+  <h1 style="margin:12px 0 8px; color:var(--primary);"><%= travel.title %></h1>
+  
+  <p style="color:var(--light); margin-bottom:20px; font-size:15px;">
+      目的地：<strong><%= travel.destination %></strong> | 
+      作者：<a href="/user/<%= travel.author._id || travel.author %>"><%= travel.authorName %></a> | 
+      发布于 <%= travel.createdAt.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }) %>
+  </p>
+  
+  <!-- 点赞收藏 -->
+  <div style="display:flex; gap:15px; margin-bottom:20px;">
+    <% if (currentUser) { %>
+      <form action="/travel/<%= travel._id %>/like" method="POST">
+        <% const hasLiked = travel.likes.some(id => id.toString() === currentUser.id); %>
+        <button type="submit" class="btn btn-sm" style="background:<%= hasLiked ? '#e74c3c' : '#eee' %>; color:<%= hasLiked ? 'white' : '#333' %>;">
+          <%= hasLiked ? '❤️ 已点赞' : '🤍 点赞' %> (<%= travel.likes.length %>)
+        </button>
+      </form>
+      <form action="/travel/<%= travel._id %>/favorite" method="POST">
+        <% const isFav = typeof favorites !== 'undefined' && favorites.some(id => id.toString() === travel._id.toString()); %>
+        <button type="submit" class="btn btn-sm" style="background:<%= isFav ? '#f39c12' : '#eee' %>; color:<%= isFav ? 'white' : '#333' %>;">
+          <%= isFav ? '⭐ 已收藏' : '☆ 收藏' %>
+        </button>
+      </form>
+    <% } else { %>
+      <a href="/login" class="btn btn-sm" style="background:#eee; color:#333;">🤍 点赞</a>
+      <a href="/login" class="btn btn-sm" style="background:#eee; color:#333;">☆ 收藏</a>
+    <% } %>
+    <span style="color:var(--light);">👁 <%= travel.views %> 浏览</span>
+  </div>
+  
+  <hr style="margin:20px 0; opacity:0.3;">
+  
+  <div style="font-size:1.1rem; line-height:1.9;"><%- travel.content %></div>
+  
+  <!-- 图片画廊 -->
+  <% if (travel.gallery && travel.gallery.length > 0) { %>
+    <div style="margin:25px 0;">
+      <h3 style="margin-bottom:12px;">📷 旅途剪影</h3>
+      <%# 以下画廊响应式样式由"Trae AI (DeepSeek-V4-Pro)"生成 %>
+      <div class="gallery-grid" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <% travel.gallery.forEach(function(img) { %>
+          <a href="<%= img %>" target="_blank" style="flex: 0 0 auto;">
+            <img src="<%= img %>" alt="旅途图片" class="gallery-thumb" style="width:150px; height:120px; object-fit:cover; border-radius:8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          </a>
+        <% }); %>
+      </div>
+      <%# AI 生成结束 %>
+    </div>
+  <% } %>
+</div>
+
+<!-- 编辑/删除按钮 -->
+<% if (currentUser && currentUser.id === travel.author._id.toString()) { %>
+  <div style="margin-bottom:20px;">
+    <a href="/travel/<%= travel._id %>/edit" class="btn btn-secondary btn-sm" style="margin-right:10px;">编辑</a>
+    <form action="/travel/<%= travel._id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('确定删除？');">
+      <button type="submit" class="btn btn-sm" style="background:#e74c3c; color:#fff;">删除</button>
+    </form>
+  </div>
+<% } %>
+<!-- Leaflet.js 交互地图：Nominatim 地理编码自动定位 -->
+<div style="margin: 30px 0;">
+  <h3>📍 目的地位置</h3>
+  <div id="map" style="height: 300px; border-radius: 12px; overflow: hidden; margin-top: 10px;"></div>
+  <p id="map-status" style="color: var(--light); font-size: 0.9rem; margin-top: 5px;"></p>
+</div>
+
+<script>
+  // 采用 Nominatim 根据目的地名称获取坐标并显示地图
+  var destination = "<%= travel.destination %>";
+  var mapElement = document.getElementById('map');
+  var statusEl = document.getElementById('map-status');
+
+  // 显示默认地图的函数（定位失败或没有目的地时使用）
+  function drawDefaultMap() {
+    var map = L.map('map').setView([35.8617, 104.1954], 4); // 中国中心
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    statusEl.textContent = statusEl.textContent || '无法定位目的地';
+  }
+
+  if (destination) {
+    statusEl.textContent = "正在定位 " + destination + " ...";
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(destination))
+      .then(function(response) { return response.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) {
+          var lat = parseFloat(data[0].lat);
+          var lon = parseFloat(data[0].lon);
+          var map = L.map('map').setView([lat, lon], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+          L.marker([lat, lon]).addTo(map)
+            .bindPopup('<b>' + destination + '</b>')
+            .openPopup();
+          statusEl.textContent = "目的地已定位：" + destination;
+        } else {
+          statusEl.textContent = "无法定位到该目的地，请尝试更具体的地名。";
+          drawDefaultMap();
+        }
+      })
+      .catch(function() {
+        statusEl.textContent = "地图加载失败，请检查网络。";
+        drawDefaultMap();
+      });
+  } else {
+    statusEl.textContent = "游记没有填写目的地";
+    drawDefaultMap();
+  }
+</script>
+<!-- 评论区 -->
+<hr style="margin:30px 0;">
+<h3>💬 评论 (<%= comments.length %>)</h3>
+<% if (currentUser) { %>
+  <form action="/travel/<%= travel._id %>/comment" method="POST" style="margin:15px 0;">
+    <textarea name="content" rows="3" placeholder="说点什么吧..." required style="width:100%; padding:12px; border-radius:10px; border:1px solid #ddd;"></textarea>
+    <button type="submit" class="btn btn-primary" style="margin-top:8px;">发表评论</button>
+  </form>
+<% } else { %>
+  <p><a href="/login">登录</a>后即可评论。</p>
+<% } %>
+
+<% if (comments.length === 0) { %>
+  <p style="color:var(--light);">暂无评论，抢个沙发吧~</p>
+<% } else { %>
+  <% comments.forEach(function(comment) { %>
+    <div class="comment-card" style="display: flex; align-items: flex-start; gap: 15px;">
+      <div style="flex: 1;">
+        <strong><%= comment.authorName %></strong>
+        <span style="color: var(--light); font-size: 0.85rem; margin-left: 10px;"><%= comment.createdAt.toLocaleDateString('zh-CN') %></span>
+        <p style="margin-top: 8px;"><%= comment.content %></p>
+      </div>
+      <div style="text-align: center; min-width: 50px;">
+        <% if (currentUser) { %>
+          <form action="/comment/<%= comment._id %>/like" method="POST">
+            <% const hasLikedComment = comment.likes.some(id => id.toString() === currentUser.id); %>
+            <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; color: <%= hasLikedComment ? '#e94560' : '#b2bec3' %>;" title="<%= hasLikedComment ? '取消点赞' : '点赞' %>">
+              <%= hasLikedComment ? '❤️' : '🤍' %>
+            </button>
+          </form>
+        <% } else { %>
+          <span style="font-size: 1.2rem; color: #b2bec3;">🤍</span>
+        <% } %>
+        <div style="font-size: 0.85rem; color: var(--light);"><%= comment.likes.length %></div>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+
+<%- include('partials/footer') %>
