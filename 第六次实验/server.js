@@ -403,7 +403,7 @@ app.post('/travel/:id/edit', cpUpload, async (req, res) => {
     });
   }
 });
-// ========== 点赞/取消点赞 ==========
+// 点赞/取消点赞：toggle 式交互，点赞后发送通知给作者
 app.post('/travel/:id/like', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
