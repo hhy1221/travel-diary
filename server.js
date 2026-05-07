@@ -834,7 +834,7 @@ app.get('/__seed__', async (req, res) => {
         const commenter = created[r(created.length)];
         if (commenter._id.equals(t.author)) continue;
         const c = await Comment.create({
-          travel: t._id, author: commenter._id,
+          travel: t._id, author: commenter._id, authorName: commenter.username,
           content: commentTexts[r(commentTexts.length)],
           likes: [created[r(created.length)]._id],
           createdAt: new Date(Date.now() - r(20) * 86400000),
