@@ -23,6 +23,7 @@ const mongoOptions = process.env.MONGODB_URI
   ? {}
   : { auth: { username: 'huanghanyang', password: 'S20061221hhy' }, authSource: 'admin' };
 
+// Railway 云部署：MONGODB_URI 环境变量 + PORT 自动注入
 mongoose.connect(mongoURI, mongoOptions).then(() => {
   console.log('MongoDB 连接成功');
 }).catch(err => {
