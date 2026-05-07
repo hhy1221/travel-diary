@@ -544,7 +544,7 @@ app.post('/comment/:id/like', async (req, res) => {
     res.redirect('/');
   }
 });
-// ========== 通知列表 ==========
+// 站内通知：评论/点赞/收藏事件推送 + 全部已读
 app.get('/notifications', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
