@@ -630,9 +630,7 @@ img { max-width: 100%; height: auto; display: block; }
 .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ======================================== */
-/* ===== 平板端响应式 (max-width: 1024px) ===== */
-/* ======================================== */
+/* 响应式布局：1024px平板 / 768px手机横屏 / 480px手机竖屏 三断点方案 */
 @media (max-width: 1024px) {
   .navbar { padding: 0 28px; }
   .nav-menu { gap: 20px; }
