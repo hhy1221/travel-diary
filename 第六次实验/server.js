@@ -611,7 +611,16 @@ app.post('/settings', upload.single('avatar'), async (req, res) => {
     const user = await User.findById(req.session.user.id);
     if (!user) return res.redirect('/login');
 
-    // 更新简介
+    const newUsername = req.body.username || '';
+    if (newUsername && newUsername !== user.username) {
+      const existing = await User.findOne({ username: newUsername });
+      if (existing) {
+        return res.render('settings', { title: '账号设置 - 旅途笔记', user, error: '该昵称已被占用' });
+      }
+      user.username = newUsername;
+      req.session.user.username = newUsername;
+    }
+
     user.bio = req.body.bio || '';
 
     // 更新头像（如果上传了文件）

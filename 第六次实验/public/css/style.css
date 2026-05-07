@@ -28,7 +28,7 @@
   src: local('SimSun'), local('Noto Serif SC'), local('STSong'), local('serif');
 }
 
-body { /* 全屏固定背景图 + 半透明遮罩 */
+body { /* 全屏固定背景图 + 半透明遮罩 + flex 推页脚到底 */
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
   background: url('/images/hero.jpg') no-repeat center center fixed;
   background-size: cover;
@@ -38,6 +38,8 @@ body { /* 全屏固定背景图 + 半透明遮罩 */
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
 }
 
 body::before {
@@ -186,6 +188,9 @@ img { max-width: 100%; height: auto; display: block; }
   max-width: 1300px;
   margin: 0 auto;
   padding: 30px 48px 80px;
+  flex: 1 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ===== 横幅区域 (Hero) ===== */

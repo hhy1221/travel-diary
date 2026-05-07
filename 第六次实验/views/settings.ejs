@@ -53,6 +53,11 @@
         </div>
       </div>
       <div class="form-group">
+        <label for="username">昵称</label>
+        <input type="text" name="username" id="username" value="<%= user.username %>" maxlength="20" required>
+        <span style="color:var(--light); font-size:0.78rem;">修改后全站显示将更新</span>
+      </div>
+      <div class="form-group">
         <label for="bio">个人简介</label>
         <textarea name="bio" id="bio" rows="3" maxlength="200" placeholder="介绍一下自己，让大家认识你..."><%= user.bio || '' %></textarea>
         <span style="color:var(--light); font-size:0.78rem;">最多 200 字</span>
