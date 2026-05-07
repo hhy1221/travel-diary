@@ -460,7 +460,7 @@ img { max-width: 100%; height: auto; display: block; }
   box-shadow: var(--shadow-sm);
   transition: all var(--transition);
 }
-.travel-card:hover {
+.travel-card:hover { /* 卡片悬停上浮 + 阴影增强 */
   transform: translateY(-6px);
   box-shadow: var(--shadow-lg);
   border-color: rgba(233, 69, 96, 0.2);
@@ -609,7 +609,7 @@ img { max-width: 100%; height: auto; display: block; }
 .alert-error { background: #ffeaa7; padding: 12px; border-radius: 8px; margin-bottom: 16px; color: #d63031; }
 
 /* ===== 加载动画 ===== */
-.fade-in-up {
+.fade-in-up { /* 卡片淡入上浮动画 + 错位延迟 */
   opacity: 0;
   transform: translateY(30px);
   animation: fadeInUp 0.7s ease forwards;
