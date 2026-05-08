@@ -27,15 +27,18 @@ const Setting = require('./models/Setting');
 // ========== 连接 MongoDB ==========
 const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/travel';
 const mongoOptions = process.env.MONGODB_URI
-  ? {}
+  ? { authSource: 'admin' }
   : { auth: { username: 'huanghanyang', password: 'S20061221hhy' }, authSource: 'admin' };
 
-mongoose.connect(mongoURI, mongoOptions).then(async () => {
-  console.log('MongoDB 连接成功');
-  const existing = await Setting.findOne();
-  if (!existing) await Setting.create({ heroMode: 'carousel', heroImages: ['hero11.jpg','hero121.jpg','hero211.jpg','hero111.jpg','hero1 (2).jpg','hero.jpg'], heroInterval: 5000, heroStaticImage: 'hero11.jpg' });
-}).catch(err => {
-  console.log('MongoDB 连接失败：', err);
+mongoose.connect(mongoURI, mongoOptions)
+  .then(async () => {
+    console.log('MongoDB 连接成功');
+    const existing = await Setting.findOne();
+    if (!existing) await Setting.create({ heroMode: 'carousel', heroImages: ['hero11.jpg','hero121.jpg','hero211.jpg','hero111.jpg','hero1 (2).jpg','hero.jpg'], heroInterval: 5000, heroStaticImage: 'hero11.jpg' });
+})
+  .catch(err => {
+    console.error('MongoDB 连接失败详情：', err.message);
+    console.error('使用 URI：', mongoURI.replace(/:[^:@]+@/, ':****@'));
 });
 
 // ========== 文件上传设置 ==========
@@ -737,7 +740,14 @@ app.get('/stats', async (req, res) => {
     });
   } catch (err) {
     console.error('Stats 查询失败:', err);
-    next(err);
+    res.status(500).render('error', {
+      title: '服务器错误 - 旅途笔记',
+      status: 500,
+      message: '统计数据加载失败',
+      detail: '请稍后再试。如问题持续存在，请联系管理员。',
+      backLink: '/',
+      backLabel: '返回首页'
+    });
   }
 });
 
@@ -824,7 +834,7 @@ app.get('/__seed__', async (req, res) => {
         const commenter = created[r(created.length)];
         if (commenter._id.equals(t.author)) continue;
         const c = await Comment.create({
-          travel: t._id, author: commenter._id,
+          travel: t._id, author: commenter._id, authorName: commenter.username,
           content: commentTexts[r(commentTexts.length)],
           likes: [created[r(created.length)]._id],
           createdAt: new Date(Date.now() - r(20) * 86400000),
@@ -896,6 +906,33 @@ app.post('/admin/upload', requireAdmin, (req, res) => {
   });
 });
 
+// ========== 数据导出（用于迁移） ==========
+app.get('/__export__', async (req, res) => {
+  try {
+    const users = await User.find().lean();
+    const travels = await Travel.find().lean();
+    const comments = await Comment.find().lean();
+    const notifications = await Notification.find().lean();
+    const settings = await Setting.find().lean();
+    res.json({ exportedAt: new Date().toISOString(), users, travels, comments, notifications, settings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ========== 健康检查端点（Railway / 监控系统探活用） ==========
+app.get('/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  const healthy = dbState === 1;
+  res.status(healthy ? 200 : 503).json({
+    status: healthy ? 'ok' : 'degraded',
+    uptime: process.uptime(),
+    db: dbStates[dbState] || 'unknown',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // ========== 404 处理 — 所有未匹配路由 ==========
 app.use((req, res) => {
   res.status(404).render('error', {
@@ -920,6 +957,26 @@ app.use((err, req, res, next) => {
     backLink: '/',
     backLabel: '返回首页'
   });
+});
+
+// ========== 全局未捕获异常兜底（防止进程崩溃） ==========
+process.on('uncaughtException', (err) => {
+  console.error('未捕获异常:', err.message);
+  console.error(err.stack);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('未处理的 Promise 拒绝:', reason);
+});
+
+// MongoDB 连接事件监听（断连自动重连）
+mongoose.connection.on('disconnected', () => {
+  console.warn('MongoDB 连接断开，正在尝试重连...');
+});
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB 已重新连接');
+});
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB 连接错误:', err.message);
 });
 
 // ========== 启动服务器 ==========
