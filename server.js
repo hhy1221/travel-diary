@@ -61,6 +61,26 @@ const cpUpload = upload.fields([
   { name: 'gallery', maxCount: 10 }
 ]);
 
+const adminImageStorage = multer.diskStorage({
+  destination: function (req, file, cb) { cb(null, path.join(__dirname, 'public', 'images')); },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'hero-' + uniqueSuffix + ext);
+  }
+});
+const adminImageUpload = multer({
+  storage: adminImageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    if (!file.mimetype.startsWith('image/')) {
+      cb(new Error('只允许上传图片文件'));
+    } else {
+      cb(null, true);
+    }
+  }
+});
+
 // ========== Passport GitHub OAuth 第三方登录配置 ==========
 // 仅在环境变量已配时才启用，避免空值导致服务器崩溃
 if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
@@ -880,7 +900,7 @@ app.get('/admin', requireAdmin, async (req, res) => {
   const imagesDir = path.join(__dirname, 'public', 'images');
   const allImages = fs.readdirSync(imagesDir).filter(f =>
     /\.(jpg|jpeg|png|gif|webp)$/i.test(f)
-  ).filter(f => f.toLowerCase().startsWith('hero'));
+  );
   res.render('admin', { setting, allImages, currentUser: req.session.user });
 });
 
@@ -893,17 +913,50 @@ app.post('/admin/settings', requireAdmin, async (req, res) => {
   if (!setting) setting = new Setting();
   setting.heroMode = heroMode || 'carousel';
   setting.heroImages = heroImages;
-  setting.heroInterval = parseInt(heroInterval) || 5000;
+  setting.heroInterval = parseInt(heroInterval) * 1000 || 5000;
   setting.heroStaticImage = heroStaticImage || '';
   await setting.save();
   res.redirect('/admin?saved=1');
 });
 
 app.post('/admin/upload', requireAdmin, (req, res) => {
-  cpUpload(req, res, async (err) => {
+  adminImageUpload.single('cover')(req, res, async (err) => {
     if (err) return res.send('上传失败: ' + err.message);
-    res.redirect('/admin?uploaded=1');
+    if (!req.file) return res.send('未收到文件，请选择一张图片');
+    try {
+      let setting = await Setting.findOne();
+      if (!setting) setting = new Setting();
+      if (!setting.heroImages.includes(req.file.filename)) {
+        setting.heroImages.push(req.file.filename);
+        await setting.save();
+      }
+      res.redirect('/admin?uploaded=1');
+    } catch (e) {
+      res.send('处理失败: ' + e.message);
+    }
   });
+});
+
+app.post('/admin/delete-image', requireAdmin, async (req, res) => {
+  const { filename } = req.body;
+  if (!filename) return res.redirect('/admin?delete_error=1');
+  const filePath = path.join(__dirname, 'public', 'images', filename);
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    const setting = await Setting.findOne();
+    if (setting) {
+      setting.heroImages = setting.heroImages.filter(f => f !== filename);
+      if (setting.heroStaticImage === filename) {
+        setting.heroStaticImage = '';
+      }
+      await setting.save();
+    }
+    res.redirect('/admin?deleted=1');
+  } catch (e) {
+    res.redirect('/admin?delete_error=1');
+  }
 });
 
 // ========== 数据导出（用于迁移） ==========

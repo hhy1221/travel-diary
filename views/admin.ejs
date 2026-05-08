@@ -15,6 +15,9 @@
   .image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .image-card .check-mark { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: none; align-items: center; justify-content: center; font-size: 14px; }
   .image-card.selected .check-mark { display: flex; }
+  .delete-btn { position: absolute; bottom: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 2; }
+  .delete-btn:hover { background: #e74c3c; }
+  .image-card.static-radio .delete-btn { bottom: 6px; right: 6px; }
   .image-card.static-radio { display: flex; align-items: center; justify-content: center; }
   .image-card .radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ccc; position: absolute; top: 8px; left: 8px; background: #fff; }
   .image-card.static-selected .radio-dot { border-color: var(--primary); background: var(--primary); }
@@ -27,6 +30,7 @@
   .upload-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 30px; text-align: center; margin-bottom: 14px; }
   .upload-area input[type="file"] { margin-top: 12px; }
   .toast { position: fixed; top: 24px; right: 24px; background: #4caf50; color: #fff; padding: 14px 24px; border-radius: var(--radius); z-index: 9999; animation: fadeInUp 0.3s ease; }
+  .toast.error { background: #e74c3c; }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .static-select-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
 </style>
@@ -39,7 +43,13 @@
     <div class="toast" id="toast">设置已保存！</div>
   <% } %>
   <% if (typeof query !== 'undefined' && query.uploaded) { %>
-    <div class="toast" id="toast">图片上传成功！</div>
+    <div class="toast" id="toast">图片上传成功，已自动加入轮播列表！</div>
+  <% } %>
+  <% if (typeof query !== 'undefined' && query.deleted) { %>
+    <div class="toast" id="toast">图片已删除！</div>
+  <% } %>
+  <% if (typeof query !== 'undefined' && query.delete_error) { %>
+    <div class="toast error" id="toast">删除失败，请重试</div>
   <% } %>
 
   <form method="POST" action="/admin/settings">
@@ -60,6 +70,7 @@
             <div class="image-card <%= isSel ? 'selected' : '' %>" data-image="<%= img %>" onclick="toggleImage(this)">
               <img src="/images/<%= img %>" alt="<%= img %>">
               <div class="check-mark">✓</div>
+              <button type="button" class="delete-btn" title="删除此图片" onclick="event.stopPropagation(); deleteImage('<%= img %>')">✕</button>
               <input type="checkbox" name="heroImages" value="<%= img %>" <%= isSel ? 'checked' : '' %> style="display:none;">
             </div>
           <% }); %>
@@ -79,6 +90,7 @@
             <div class="image-card static-radio <%= staImg === img ? 'static-selected' : '' %>" data-image="<%= img %>" onclick="selectStatic(this)">
               <img src="/images/<%= img %>" alt="<%= img %>">
               <div class="radio-dot"></div>
+              <button type="button" class="delete-btn" title="删除此图片" onclick="event.stopPropagation(); deleteImage('<%= img %>')">✕</button>
               <input type="radio" name="heroStaticImage" value="<%= img %>" <%= staImg === img ? 'checked' : '' %> style="display:none;">
             </div>
           <% }); %>
@@ -93,7 +105,7 @@
     <h3>上传新图片</h3>
     <form method="POST" action="/admin/upload" enctype="multipart/form-data">
       <div class="upload-area">
-        <p style="color:var(--light); margin-bottom:12px;">选择以 "hero" 开头的图片文件（如 hero-xxx.jpg）</p>
+        <p style="color:var(--light); margin-bottom:12px;">选择任意图片上传，上传后将自动命名为 hero-xxx 并加入轮播列表</p>
         <input type="file" name="cover" accept="image/*" required>
       </div>
       <button type="submit" class="btn-save">上传</button>
@@ -126,6 +138,20 @@
     el.classList.add('static-selected');
     var rb = el.querySelector('input[type="radio"]');
     rb.checked = true;
+  }
+
+  function deleteImage(filename) {
+    if (!confirm('确定要删除 ' + filename + ' 吗？此操作不可撤销。')) return;
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/admin/delete-image';
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'filename';
+    input.value = filename;
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
   }
 </script>
 
